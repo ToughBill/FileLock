@@ -1,0 +1,56 @@
+package fileLock.actions;
+
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vfs.VirtualFile;
+
+import java.io.File;
+
+/**
+ * Created by lbin on 7/26/2016.
+ */
+public class Revert extends AnAction {
+    public Revert(){
+        super("Revert");
+    }
+
+    @Override
+    public void actionPerformed(AnActionEvent event){
+        VirtualFile virFile = event.getData(CommonDataKeys.VIRTUAL_FILE);
+        if (virFile == null) {
+            return;
+        }
+        Editor editor = event.getRequiredData(CommonDataKeys.EDITOR);
+        Document doc = editor.getDocument();
+        if (FileDocumentManager.getInstance().isDocumentUnsaved(doc)){
+            String str = "File has been changed, continue to revert will lose the change. Do you want to continue?";
+            int ret = Messages.showDialog(str, "File Lock", new String[]{"Yes","No"}, -1, null);
+            System.out.print("ret: ");
+            System.out.print(ret);
+            System.out.println();
+            if (ret == 1)
+                return;
+        }
+
+        String path = virFile.getPath();
+        File file = new File(path);
+        file.setReadOnly();
+        virFile.refresh(false,false);
+    }
+
+    @Override
+    public void update(AnActionEvent event){
+        VirtualFile virFile = event.getData(CommonDataKeys.VIRTUAL_FILE);
+        if (virFile == null) {
+            return;
+        }
+        String path = virFile.getPath();
+        File file = new File(path);
+        event.getPresentation().setEnabled(file.canWrite());
+    }
+}

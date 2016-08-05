@@ -1,0 +1,22 @@
+config:
+{
+    "compApp":[
+        {
+            "name": "svn",
+            "path": "C:\Program Files\TortoiseSVN\bin\TortoiseMerge.exe"
+        },
+        {
+            "name": "beyondCompare",
+            "path":""
+        }
+    ],
+    "codeLines":[
+        {
+            "no": 1,
+            "createDate": "20160728",
+            "path": "",
+            "repoNo": 2,
+
+        }
+    ]
+}

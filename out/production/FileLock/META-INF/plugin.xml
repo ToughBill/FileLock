@@ -1,0 +1,60 @@
+<idea-plugin version="2">
+  <id>com.your.company.unique.plugin.id</id>
+  <name>File Lock</name>
+  <version>1.0</version>
+  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+
+  <description><![CDATA[
+      Enter short description for your plugin here.<br>
+      <em>most HTML tags may be used</em>
+    ]]></description>
+
+  <change-notes><![CDATA[
+      Add change notes here.<br>
+      <em>most HTML tags may be used</em>
+    ]]>
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="141.0"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products-->
+  <depends>com.intellij.modules.lang</depends>
+
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+  </extensions>
+
+  <actions>
+    <action class="fileLock.actions.CheckOut" id="ac_checkOut" text="Checkout" description="Check File Out">
+      <add-to-group group-id="EditorTabPopupMenu" anchor="last"></add-to-group>
+      <add-to-group group-id="EditorPopupMenu" anchor="last"></add-to-group>
+    </action>
+    <action class="fileLock.actions.CheckOutTo" id="ac_checkOutTo" text="Checkout to..." description="Check File Out to specific changelist">
+      <add-to-group group-id="EditorTabPopupMenu" anchor="last"></add-to-group>
+      <add-to-group group-id="EditorPopupMenu" anchor="last"></add-to-group>
+    </action>
+    <action class="fileLock.actions.Diff" id="ac_diff" text="Diff" description="Diff">
+      <add-to-group group-id="EditorTabPopupMenu" anchor="last"></add-to-group>
+      <add-to-group group-id="EditorPopupMenu" anchor="last"></add-to-group>
+    </action>
+    <action class="fileLock.actions.Revert" id="ac_revert" text="Revert" description="Revert">
+      <add-to-group group-id="EditorTabPopupMenu" anchor="last"></add-to-group>
+      <add-to-group group-id="EditorPopupMenu" anchor="last"></add-to-group>
+    </action>
+    <action class="fileLock.actions.ViewAllChangeList" id="ac_viewAllCL" text="View All Change Lists" description="View All Change Lists">
+      <add-to-group group-id="EditorTabPopupMenu" anchor="last"></add-to-group>
+      <add-to-group group-id="EditorPopupMenu" anchor="last"></add-to-group>
+    </action>
+    <!-- Add your actions here -->
+    <group id="MyPlugin.FileLock" text="File Lock" description="File Lock">
+      <add-to-group group-id="MainMenu" anchor="last"  />
+      <action id="Myplugin.Checkout" class="fileLock.actions.CheckOut" text="Check Out" description="Check out file" />
+    </group>
+
+  </actions>
+
+</idea-plugin>
