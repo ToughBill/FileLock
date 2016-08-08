@@ -6,6 +6,7 @@ import fileLock.config.Utils;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.List;
 
 /**
  * Created by lbin on 7/29/2016.
@@ -16,6 +17,13 @@ public class ChangeList {
     public static final int Default_CL_No = -10;
 
     public ChangeList(){
+    }
+
+    public String toString(){
+        return String.format("ID: %d, Description: %s", m_clBean.clNo, m_clBean.desc);
+    }
+    public List<String> getFiles(){
+        return m_clBean.files;
     }
 
     public boolean save(){

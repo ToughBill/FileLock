@@ -2,12 +2,15 @@ package fileLock.bo;
 
 import com.intellij.openapi.diff.impl.incrementalMerge.Change;
 import com.intellij.openapi.project.ProjectManager;
+import fileLock.config.Utils;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,15 +40,25 @@ public class CodeLine {
         try{
             File dir = new File(repoPath);
             String[] files = dir.list();
-
+            ret = new ArrayList<>();
+            for (String str : files) {
+                ChangeList cl = new ChangeList();
+                cl.getByKey(Integer.valueOf(getFileNameWithoutExtension(str)));
+                ret.add(cl);
+            }
 
         }catch (Exception e){
             e.printStackTrace();
+            ret = null;
         }
 
         return ret;
     }
 
+    private String getFileNameWithoutExtension(String fileName){
+        String temp = Paths.get(fileName).getFileName().toString();
+        return temp.substring(0, temp.length() - Utils.JSON_Suffix.length());
+    }
 
     private static CodeLine m_curCodeLine;
     public static CodeLine getCurrentCodeLine(){

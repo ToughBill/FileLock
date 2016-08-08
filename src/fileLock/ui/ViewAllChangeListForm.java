@@ -4,13 +4,17 @@
 
 package fileLock.ui;
 
+import fileLock.bo.ChangeList;
 import fileLock.bo.CodeLine;
 
 import java.awt.*;
+import java.util.*;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.GroupLayout;
 import javax.swing.border.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 
 /**
@@ -28,7 +32,8 @@ public class ViewAllChangeListForm extends JFrame {
         dialogPane = new JPanel();
         contentPanel = new JPanel();
         scrollPane1 = new JScrollPane();
-        clTree = new JTree();
+        rootNode = new DefaultMutableTreeNode("All CodeLines");
+        clTree = new JTree(rootNode);
         label1 = new JLabel();
         panel1 = new JPanel();
         label2 = new JLabel();
@@ -70,7 +75,7 @@ public class ViewAllChangeListForm extends JFrame {
                 {
 
                     //---- clTree ----
-                    clTree.setRootVisible(false);
+                    //clTree.setRootVisible(false);
                     scrollPane1.setViewportView(clTree);
                 }
 
@@ -224,6 +229,7 @@ public class ViewAllChangeListForm extends JFrame {
     private JPanel dialogPane;
     private JPanel contentPanel;
     private JScrollPane scrollPane1;
+    private DefaultMutableTreeNode rootNode;
     private JTree clTree;
     private JLabel label1;
     private JPanel panel1;
@@ -242,12 +248,26 @@ public class ViewAllChangeListForm extends JFrame {
     private JButton cancelButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 
+    private DefaultTreeModel m_model;
     private void initData(){
         CodeLine codeLine = CodeLine.getCurrentCodeLine();
-        clTree.removeAll();
-        DefaultMutableTreeNode node = new DefaultMutableTreeNode("All CodeLines");
-        TreeNode root = (TreeNode)clTree.getModel().getRoot();
-        DefaultMutableTreeNode temp = new DefaultMutableTreeNode(clTree.getModel().getRoot());
-        temp.removeAllChildren();
+
+        m_model = (DefaultTreeModel)clTree.getModel();
+        int stIndex = 0;
+        DefaultMutableTreeNode codeLineNode = new DefaultMutableTreeNode(codeLine.getProjectPath());
+        //m_model.insertNodeInto(node, rootNode, stIndex);
+        List<ChangeList> cls = codeLine.getAllChangeList();
+        for (ChangeList cl : cls){
+            DefaultMutableTreeNode clNode = new DefaultMutableTreeNode(cl.toString());
+            for (String str : cl.getFiles()){
+                DefaultMutableTreeNode clFileNode = new DefaultMutableTreeNode(str);
+                clNode.add(clFileNode);
+            }
+            codeLineNode.add(clNode);
+        }
+        rootNode.add(codeLineNode);
+        clTree.updateUI();
+//        DefaultMutableTreeNode temp = new DefaultMutableTreeNode(clTree.getModel().getRoot());
+//        temp.removeAllChildren();
     }
 }

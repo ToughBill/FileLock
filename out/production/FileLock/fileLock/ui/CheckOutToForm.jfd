@@ -1,0 +1,50 @@
+JFDML JFormDesigner: "5.2.4.0.321" Java: "1.8.0_76-release" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"title": "Check out to..."
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "dialogPane"
+				"border": new javax.swing.border.EmptyBorder( 12, 12, 12, 12 )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq {space :::p, par l {seq l {comp label1:::p:85:p, space :::p, comp comboBox1:::p:306:p}, seq l {comp label2:::p:85:p, space :::p, comp textArea2:::p:298:p}, seq l {comp btnOk:::p:72:p, space :::p, comp btnCancel:::p::p}}, space :0:8:x}}"
+					"$verticalGroup": "par l {seq l {space :::p, par t {comp label1:::p::p, comp comboBox1:::p::p}, space :::p, par l {seq {comp label2:::p::p, space :0:153:x}, comp textArea2::::174:x}, space :::p, par b {comp btnOk::b:p::p, comp btnCancel::b:p::p}}}"
+				} ) {
+					name: "contentPanel"
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label1"
+						"text": "Change list"
+					} )
+					add( new FormComponent( "javax.swing.JComboBox" ) {
+						name: "comboBox1"
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label2"
+						"text": "Description"
+					} )
+					add( new FormComponent( "javax.swing.JTextArea" ) {
+						name: "textArea2"
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "btnCancel"
+						"text": "Cancel"
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "btnOk"
+						"text": "Ok"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 455, 335 )
+		} )
+	}
+}
