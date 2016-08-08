@@ -1,6 +1,13 @@
 package fileLock.ui;
 
+import java.awt.event.*;
+import com.intellij.openapi.diff.impl.incrementalMerge.Change;
+import fileLock.bo.ChangeList;
+import fileLock.bo.CodeLine;
+
 import java.awt.*;
+import java.util.*;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.GroupLayout;
 import javax.swing.border.*;
@@ -16,6 +23,24 @@ import javax.swing.border.*;
 public class CheckOutToForm extends JFrame {
     public CheckOutToForm() {
         initComponents();
+        initData();
+    }
+
+    private void cmbCLsActionPerformed(ActionEvent e) {
+
+    }
+
+    private void cmbCLsItemStateChanged(ItemEvent e) {
+        if(e.getStateChange() == ItemEvent.SELECTED){
+            Object obj = e.getItem();
+            if (obj instanceof ChangeList){
+                ChangeList cl = (ChangeList)e.getItem();
+                txtDesc.setText(cl.getCLDesc());
+            }
+            else if(obj.toString().equals("Define New")) {
+                txtDesc.setText("");
+            }
+        }
     }
 
     private void initComponents() {
@@ -24,9 +49,9 @@ public class CheckOutToForm extends JFrame {
         dialogPane = new JPanel();
         contentPanel = new JPanel();
         label1 = new JLabel();
-        comboBox1 = new JComboBox();
+        cmbCLs = new JComboBox();
         label2 = new JLabel();
-        textArea2 = new JTextArea();
+        txtDesc = new JTextArea();
         btnCancel = new JButton();
         btnOk = new JButton();
 
@@ -54,6 +79,10 @@ public class CheckOutToForm extends JFrame {
                 //---- label1 ----
                 label1.setText("Change list");
 
+                //---- cmbCLs ----
+                cmbCLs.addActionListener(e -> cmbCLsActionPerformed(e));
+                cmbCLs.addItemListener(e -> cmbCLsItemStateChanged(e));
+
                 //---- label2 ----
                 label2.setText("Description");
 
@@ -73,11 +102,11 @@ public class CheckOutToForm extends JFrame {
                                 .addGroup(contentPanelLayout.createSequentialGroup()
                                     .addComponent(label1, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(comboBox1, GroupLayout.PREFERRED_SIZE, 306, GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(cmbCLs, GroupLayout.PREFERRED_SIZE, 306, GroupLayout.PREFERRED_SIZE))
                                 .addGroup(contentPanelLayout.createSequentialGroup()
                                     .addComponent(label2, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(textArea2, GroupLayout.PREFERRED_SIZE, 298, GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(txtDesc, GroupLayout.PREFERRED_SIZE, 298, GroupLayout.PREFERRED_SIZE))
                                 .addGroup(contentPanelLayout.createSequentialGroup()
                                     .addComponent(btnOk, GroupLayout.PREFERRED_SIZE, 72, GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
@@ -90,13 +119,13 @@ public class CheckOutToForm extends JFrame {
                             .addContainerGap()
                             .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
                                 .addComponent(label1)
-                                .addComponent(comboBox1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addComponent(cmbCLs, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                             .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                             .addGroup(contentPanelLayout.createParallelGroup()
                                 .addGroup(contentPanelLayout.createSequentialGroup()
                                     .addComponent(label2)
                                     .addGap(0, 153, Short.MAX_VALUE))
-                                .addComponent(textArea2, GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE))
+                                .addComponent(txtDesc, GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE))
                             .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                             .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                 .addComponent(btnOk)
@@ -116,10 +145,19 @@ public class CheckOutToForm extends JFrame {
     private JPanel dialogPane;
     private JPanel contentPanel;
     private JLabel label1;
-    private JComboBox comboBox1;
+    private JComboBox cmbCLs;
     private JLabel label2;
-    private JTextArea textArea2;
+    private JTextArea txtDesc;
     private JButton btnCancel;
     private JButton btnOk;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
+
+    private void initData(){
+        CodeLine codeLine = CodeLine.getCurrentCodeLine();
+        List<ChangeList> cls = codeLine.getAllChangeList();
+        for(ChangeList cl : cls){
+            cmbCLs.addItem(cl);
+        }
+        cmbCLs.addItem("Define New");
+    }
 }

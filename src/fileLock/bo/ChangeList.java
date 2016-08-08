@@ -22,6 +22,10 @@ public class ChangeList {
     public String toString(){
         return String.format("ID: %d, Description: %s", m_clBean.clNo, m_clBean.desc);
     }
+
+    public String getCLDesc(){
+        return m_clBean.desc;
+    }
     public List<String> getFiles(){
         return m_clBean.files;
     }
