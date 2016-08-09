@@ -1,5 +1,6 @@
 package fileLock.bo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,9 +8,14 @@ import java.util.List;
  */
 public class ChangeListBean {
     public int clNo;
-    public String createDate;
+    public long createDate;
     public int codeLine;
     public List<String> files;
     public String desc;
     public int shelvedCL;
+
+    public ChangeListBean(){
+        desc = "";
+        files = new ArrayList<String>();
+    }
 }

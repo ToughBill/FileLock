@@ -6,4 +6,5 @@ package fileLock.bo;
 public class CompAppBean {
     public String name;
     public String path;
+    public int isdft;
 }

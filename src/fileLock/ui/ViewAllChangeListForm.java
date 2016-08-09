@@ -4,6 +4,8 @@
 
 package fileLock.ui;
 
+import java.awt.event.*;
+import javax.swing.event.*;
 import fileLock.bo.ChangeList;
 import fileLock.bo.CodeLine;
 
@@ -16,6 +18,7 @@ import javax.swing.border.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 /**
  * @author Bin Li
@@ -26,14 +29,45 @@ public class ViewAllChangeListForm extends JFrame {
         initData();
     }
 
+    private void okButtonActionPerformed(ActionEvent e) {
+        this.dispose();
+    }
+
+    private void cancelButtonActionPerformed(ActionEvent e) {
+        this.dispose();
+    }
+
+    private void clTreeValueChanged(TreeSelectionEvent e) {
+        TreePath treepath = e.getNewLeadSelectionPath();
+        DefaultMutableTreeNode treeObj = (DefaultMutableTreeNode)treepath.getLastPathComponent();
+        Object obj = treeObj.getUserObject();
+        if (obj instanceof ChangeList){
+            ChangeList cl = (ChangeList)obj;
+            txtDesc.setText(cl.getCLDesc());
+            String temp = "";
+            for(String str : cl.getFiles()){
+                temp += str + "\r\n";
+            }
+            txtFiles.setText(temp);
+            Date dt = new Date(cl.getTime());
+            txtTime.setText(dt.toString());
+            txtProPath.setText(CodeLine.getCurrentCodeLine().getProjectPath());
+        }
+        else {
+            txtFiles.setText("");
+            txtTime.setText("");
+            txtProPath.setText("");
+            txtDesc.setText("");
+        }
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner Evaluation license - Bin Li
         dialogPane = new JPanel();
         contentPanel = new JPanel();
         scrollPane1 = new JScrollPane();
-        rootNode = new DefaultMutableTreeNode("All CodeLines");
-        clTree = new JTree(rootNode);
+        clTree = new JTree();
         label1 = new JLabel();
         panel1 = new JPanel();
         label2 = new JLabel();
@@ -75,7 +109,7 @@ public class ViewAllChangeListForm extends JFrame {
                 {
 
                     //---- clTree ----
-                    //clTree.setRootVisible(false);
+                    clTree.addTreeSelectionListener(e -> clTreeValueChanged(e));
                     scrollPane1.setViewportView(clTree);
                 }
 
@@ -179,9 +213,11 @@ public class ViewAllChangeListForm extends JFrame {
                             .addContainerGap()
                             .addGroup(contentPanelLayout.createParallelGroup()
                                 .addGroup(contentPanelLayout.createSequentialGroup()
+                                    .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 684, Short.MAX_VALUE)
+                                    .addContainerGap())
+                                .addGroup(contentPanelLayout.createSequentialGroup()
                                     .addComponent(label1)
                                     .addGap(0, 588, Short.MAX_VALUE))
-                                .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 690, Short.MAX_VALUE)
                                 .addComponent(panel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 );
                 contentPanelLayout.setVerticalGroup(
@@ -206,12 +242,17 @@ public class ViewAllChangeListForm extends JFrame {
 
                 //---- okButton ----
                 okButton.setText("OK");
+                okButton.addActionListener(e -> {
+			okButtonActionPerformed(e);
+			okButtonActionPerformed(e);
+		});
                 buttonBar.add(okButton, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 5), 0, 0));
 
                 //---- cancelButton ----
                 cancelButton.setText("Cancel");
+                cancelButton.addActionListener(e -> cancelButtonActionPerformed(e));
                 buttonBar.add(cancelButton, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 0), 0, 0));
@@ -229,7 +270,6 @@ public class ViewAllChangeListForm extends JFrame {
     private JPanel dialogPane;
     private JPanel contentPanel;
     private JScrollPane scrollPane1;
-    private DefaultMutableTreeNode rootNode;
     private JTree clTree;
     private JLabel label1;
     private JPanel panel1;
@@ -248,25 +288,33 @@ public class ViewAllChangeListForm extends JFrame {
     private JButton cancelButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 
+    private DefaultMutableTreeNode m_rootNode;
     private DefaultTreeModel m_model;
+
     private void initData(){
+        m_rootNode = new DefaultMutableTreeNode("All Code Lines");
+
+        m_model = new DefaultTreeModel(m_rootNode);
+        clTree.setModel(m_model);
         CodeLine codeLine = CodeLine.getCurrentCodeLine();
 
-        m_model = (DefaultTreeModel)clTree.getModel();
+
         int stIndex = 0;
-        DefaultMutableTreeNode codeLineNode = new DefaultMutableTreeNode(codeLine.getProjectPath());
+        DefaultMutableTreeNode codeLineNode = new DefaultMutableTreeNode(codeLine);
         //m_model.insertNodeInto(node, rootNode, stIndex);
         List<ChangeList> cls = codeLine.getAllChangeList();
         for (ChangeList cl : cls){
-            DefaultMutableTreeNode clNode = new DefaultMutableTreeNode(cl.toString());
+            DefaultMutableTreeNode clNode = new DefaultMutableTreeNode(cl);
             for (String str : cl.getFiles()){
                 DefaultMutableTreeNode clFileNode = new DefaultMutableTreeNode(str);
                 clNode.add(clFileNode);
             }
             codeLineNode.add(clNode);
         }
-        rootNode.add(codeLineNode);
+        m_rootNode.add(codeLineNode);
         clTree.updateUI();
+        clTree.expandRow(0);
+        clTree.setRootVisible(false);
 //        DefaultMutableTreeNode temp = new DefaultMutableTreeNode(clTree.getModel().getRoot());
 //        temp.removeAllChildren();
     }

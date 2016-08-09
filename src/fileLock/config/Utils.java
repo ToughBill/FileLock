@@ -16,7 +16,8 @@ public class Utils {
     public static final String ShelvedCLFolderName = "shelvedCL";
     public static final String ConfigFileName = "config.json";
     public static final String JSON_Suffix = ".json";
-    public static final String CL_Template = "{\"no\":%d,\"createDate\":%d,\"codeLine\":%d,\"files\":[],\"desc\":\"%s\",\"seelvedCL\":%d}";
+    public static final String Backup_File = "backup_file";
+    public static final String CL_Template = "{\"clNo\":%d,\"createDate\":%d,\"codeLine\":%d,\"files\":[],\"desc\":\"%s\",\"seelvedCL\":%d}";
 
     public static String getDataFolderPath(){
         String userFolder = System.getProperty("user.home");
@@ -57,6 +58,9 @@ public class Utils {
 
         try{
             File file = new File(filePath);
+            if (!file.exists()){
+                file.createNewFile();
+            }
             FileOutputStream out = new FileOutputStream(file,false);
             out.write(content.getBytes());
             out.close();
@@ -71,5 +75,27 @@ public class Utils {
     public static String objectToString(Object obj){
         Gson gson = new Gson();
         return gson.toJson(obj);
+    }
+
+    public static boolean copyFile(String source, String target){
+        boolean ret = true;
+
+        try{
+            FileInputStream fis = new FileInputStream(source);
+            FileOutputStream fos = new FileOutputStream(target);
+            byte[] bytes = new byte[1024];
+            int temp = 0;
+            while ((temp = fis.read(bytes)) != -1){
+                fos.write(bytes, 0, temp);
+            }
+            fos.flush();
+            fis.close();
+            fos.close();
+        }catch (IOException e){
+            e.printStackTrace();
+            ret = false;
+        }
+
+        return ret;
     }
 }

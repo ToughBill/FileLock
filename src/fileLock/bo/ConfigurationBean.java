@@ -8,4 +8,5 @@ import java.util.List;
 public class ConfigurationBean {
     public List<CompAppBean> compApp;
     public List<CodeLineBean> codeLine;
+    public int nextCLNo;
 }

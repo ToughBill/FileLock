@@ -70,6 +70,8 @@ public class Configuration {
         String codeLinePath = Paths.get(Utils.getDataFolderPath(), String.valueOf(newCodeLineNo)).toString();
         File dir = new File(codeLinePath);
         dir.mkdir();
+        File dir2 = new File(Paths.get(codeLinePath, Utils.Backup_File).toString());
+        dir2.mkdir();
 
         ret = new CodeLineBean();
         ret.codeLineNo = maxNo + 1;
@@ -122,4 +124,10 @@ public class Configuration {
         return ret;
     }
 
+    public int getNextCLNo(){
+        int ret =  m_cfgBean.nextCLNo;
+        m_cfgBean.nextCLNo++;
+        save();
+        return ret;
+    }
 }

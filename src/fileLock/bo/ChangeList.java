@@ -2,6 +2,7 @@ package fileLock.bo;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.intellij.openapi.diff.impl.incrementalMerge.Change;
 import fileLock.config.Utils;
 
 import java.io.File;
@@ -19,6 +20,13 @@ public class ChangeList {
     public ChangeList(){
     }
 
+    public boolean initNew(){
+        m_clBean = new ChangeListBean();
+        m_clBean.clNo = Configuration.getInstance().getNextCLNo();
+
+        return true;
+    }
+
     public String toString(){
         return String.format("ID: %d, Description: %s", m_clBean.clNo, m_clBean.desc);
     }
@@ -26,8 +34,20 @@ public class ChangeList {
     public String getCLDesc(){
         return m_clBean.desc;
     }
+    public void setCLDesc(String desc){
+        m_clBean.desc = desc;
+    }
+    public void setDate(long date_){
+        m_clBean.createDate = date_;
+    }
+    public void setCodeLine(int codeLine_){
+        m_clBean.codeLine = codeLine_;
+    }
     public List<String> getFiles(){
         return m_clBean.files;
+    }
+    public int getCLNo(){
+        return m_clBean.clNo;
     }
 
     public boolean save(){
@@ -46,6 +66,9 @@ public class ChangeList {
     public String getCLPath(int clNo){
         CodeLine codeLine = CodeLine.getCurrentCodeLine();
         return Paths.get(codeLine.getRepoPath(), String.valueOf(clNo) + Utils.JSON_Suffix).toString();
+    }
+    public long getTime(){
+        return m_clBean.createDate;
     }
 
     public boolean getByKey(int clNo){
@@ -80,6 +103,9 @@ public class ChangeList {
         boolean ret = true;
 
         m_clBean.files.add(file);
+        String backupFolder = Paths.get(CodeLine.getCurrentCodeLine().getRepoPath(), Utils.Backup_File).toString();
+        ret = Utils.copyFile(file, Paths.get(backupFolder,
+                String.valueOf(m_clBean.clNo) + "_" + Paths.get(file).getFileName().toString()).toString());
         //save();
         return ret;
     }
@@ -96,5 +122,12 @@ public class ChangeList {
         }
 
         return ret;
+    }
+
+    public static ChangeList findChangeList(String filePath){
+        ChangeList ret = null;
+
+
+        return  ret;
     }
 }

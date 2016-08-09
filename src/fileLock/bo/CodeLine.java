@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,6 +32,10 @@ public class CodeLine {
 
     public CodeLine(CodeLineBean codeLineBean){
         m_codeLineBean = codeLineBean;
+    }
+
+    public String toString(){
+        return m_codeLineBean.proPath + "   " + m_codeLineBean.createDate;
     }
 
     public List<ChangeList> getAllChangeList(){

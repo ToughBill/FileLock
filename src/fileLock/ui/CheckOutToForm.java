@@ -2,10 +2,12 @@ package fileLock.ui;
 
 import java.awt.event.*;
 import com.intellij.openapi.diff.impl.incrementalMerge.Change;
+import com.intellij.openapi.vfs.VirtualFile;
 import fileLock.bo.ChangeList;
 import fileLock.bo.CodeLine;
 
 import java.awt.*;
+import java.io.File;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
@@ -21,7 +23,9 @@ import javax.swing.border.*;
  * @author Bin Li
  */
 public class CheckOutToForm extends JFrame {
-    public CheckOutToForm() {
+    private VirtualFile m_selectedFile;
+    public CheckOutToForm(VirtualFile file_) {
+        m_selectedFile = file_;
         initComponents();
         initData();
     }
@@ -34,13 +38,44 @@ public class CheckOutToForm extends JFrame {
         if(e.getStateChange() == ItemEvent.SELECTED){
             Object obj = e.getItem();
             if (obj instanceof ChangeList){
-                ChangeList cl = (ChangeList)e.getItem();
+                ChangeList cl = (ChangeList)obj;
                 txtDesc.setText(cl.getCLDesc());
             }
             else if(obj.toString().equals("Define New")) {
                 txtDesc.setText("");
             }
         }
+    }
+
+    private void btnOkActionPerformed(ActionEvent e) {
+
+        String path = m_selectedFile.getPath();
+        File file = new File(path);
+        if (!file.canWrite()){
+            file.setWritable(true);
+            m_selectedFile.refresh(false,false);
+            Object obj = cmbCLs.getSelectedItem();
+            if (obj instanceof ChangeList){
+                ChangeList cl = (ChangeList)obj;
+                cl.checkoutFile(path);
+                cl.save();
+            }
+            else if(obj.toString().equals("Define New")){
+                ChangeList newCL = new ChangeList();
+                newCL.initNew();
+                newCL.setCLDesc(txtDesc.getText());
+                newCL.setDate(Calendar.getInstance().getTimeInMillis());
+                newCL.setCodeLine(CodeLine.getCurrentCodeLine().getCodeLineNo());
+                newCL.checkoutFile(path);
+                newCL.save();
+            }
+        }
+
+        this.dispose();
+    }
+
+    private void btnCancelActionPerformed(ActionEvent e) {
+        this.dispose();
     }
 
     private void initComponents() {
@@ -88,9 +123,11 @@ public class CheckOutToForm extends JFrame {
 
                 //---- btnCancel ----
                 btnCancel.setText("Cancel");
+                btnCancel.addActionListener(e -> btnCancelActionPerformed(e));
 
                 //---- btnOk ----
                 btnOk.setText("Ok");
+                btnOk.addActionListener(e -> btnOkActionPerformed(e));
 
                 GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
                 contentPanel.setLayout(contentPanelLayout);
