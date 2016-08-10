@@ -4,10 +4,7 @@ import com.intellij.openapi.diff.impl.incrementalMerge.Change;
 import com.intellij.openapi.project.ProjectManager;
 import fileLock.config.Utils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -44,7 +41,8 @@ public class CodeLine {
         String repoPath = getRepoPath();
         try{
             File dir = new File(repoPath);
-            String[] files = dir.list();
+            FileTypeFilter filter = new FileTypeFilter(Utils.JSON_Suffix);
+            String[] files = dir.list(filter);
             ret = new ArrayList<>();
             for (String str : files) {
                 ChangeList cl = new ChangeList();
@@ -104,5 +102,17 @@ public class CodeLine {
         }
 
         return result;
+    }
+}
+
+class FileTypeFilter implements FilenameFilter{
+    private String m_type;
+    public FileTypeFilter(String type){
+        m_type = type;
+    }
+    public boolean accept(File fl, String path) {
+        File file = new File(path);
+        String filename = file.getName();
+        return filename.indexOf(m_type)!=-1;
     }
 }

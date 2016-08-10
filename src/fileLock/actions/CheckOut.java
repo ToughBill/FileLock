@@ -25,12 +25,11 @@ public class CheckOut extends AnAction {
         String path = virFile.getPath();
         File file = new File(path);
         if (!file.canWrite()){
-            file.setWritable(true);
-            virFile.refresh(false,false);
-            if(!ChangeList.CheckoutToDefaultCL(path)){
-                file.setWritable(false);
+            if(ChangeList.CheckoutToDefaultCL(path)){
+                file.setWritable(true);
                 virFile.refresh(false,false);
             }
+
         }
 
 

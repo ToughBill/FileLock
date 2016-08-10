@@ -77,7 +77,7 @@ public class Utils {
         return gson.toJson(obj);
     }
 
-    public static boolean copyFile(String source, String target){
+    public static boolean copyFile(String source, String target, boolean setTargetReadOnly){
         boolean ret = true;
 
         try{
@@ -91,6 +91,12 @@ public class Utils {
             fos.flush();
             fis.close();
             fos.close();
+
+            if (setTargetReadOnly){
+                File file = new File(target);
+                file.setReadOnly();
+            }
+
         }catch (IOException e){
             e.printStackTrace();
             ret = false;

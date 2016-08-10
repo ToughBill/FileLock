@@ -130,4 +130,16 @@ public class Configuration {
         save();
         return ret;
     }
+
+    public CompAppBean getDefaultCompApp(){
+        CompAppBean ret = null;
+        for (CompAppBean app : m_cfgBean.compApp){
+            if (app.isdft == 1){
+                ret = app;
+                break;
+            }
+        }
+
+        return ret;
+    }
 }

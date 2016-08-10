@@ -105,8 +105,19 @@ public class ChangeList {
         m_clBean.files.add(file);
         String backupFolder = Paths.get(CodeLine.getCurrentCodeLine().getRepoPath(), Utils.Backup_File).toString();
         ret = Utils.copyFile(file, Paths.get(backupFolder,
-                String.valueOf(m_clBean.clNo) + "_" + Paths.get(file).getFileName().toString()).toString());
+                String.valueOf(m_clBean.clNo) + "_" + Paths.get(file).getFileName().toString()).toString(),
+                true);
         //save();
+        return ret;
+    }
+
+    public boolean revertFile(String file){
+        boolean ret = true;
+
+        if(m_clBean.files.contains(file)){
+            m_clBean.files.remove(file);
+        }
+
         return ret;
     }
 
@@ -126,7 +137,20 @@ public class ChangeList {
 
     public static ChangeList findChangeList(String filePath){
         ChangeList ret = null;
-
+        List<ChangeList> cls = CodeLine.getCurrentCodeLine().getAllChangeList();
+        boolean found = false;
+        for(ChangeList cl : cls){
+            List<String> files = cl.getFiles();
+            for(String str : files){
+                if (str.equals(filePath)){
+                    found = true;
+                    ret = cl;
+                    break;
+                }
+            }
+            if (found)
+                break;
+        }
 
         return  ret;
     }

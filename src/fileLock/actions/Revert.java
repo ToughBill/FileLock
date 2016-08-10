@@ -8,8 +8,12 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
+import fileLock.bo.ChangeList;
+import fileLock.bo.CodeLine;
+import fileLock.config.Utils;
 
 import java.io.File;
+import java.nio.file.Paths;
 
 /**
  * Created by lbin on 7/26/2016.
@@ -38,9 +42,23 @@ public class Revert extends AnAction {
         }
 
         String path = virFile.getPath();
+        ChangeList cl = ChangeList.findChangeList(path);
+        if (cl == null)
+            return;
+
         File file = new File(path);
-        file.setReadOnly();
-        virFile.refresh(false,false);
+        String fileName = file.getName();
+        String backupFolder = Paths.get(CodeLine.getCurrentCodeLine().getRepoPath(), Utils.Backup_File).toString();
+        String backupFilePath = Paths.get(backupFolder, String.valueOf(cl.getCLNo()) + "_" + fileName).toString();
+        if(Utils.copyFile(backupFilePath, path, true)){
+            //file.setReadOnly();
+            cl.revertFile(path);
+            cl.save();
+            File backupFile = new File(backupFilePath);
+            backupFile.delete();
+
+            virFile.refresh(false,false);
+        }
     }
 
     @Override

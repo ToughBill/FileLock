@@ -6,9 +6,11 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.vfs.VirtualFile;
 import fileLock.bo.ChangeList;
 import fileLock.bo.CodeLine;
+import fileLock.bo.CompAppBean;
 import fileLock.bo.Configuration;
 import fileLock.config.Utils;
 
+import java.io.File;
 import java.nio.file.Paths;
 
 /**
@@ -33,6 +35,28 @@ public class Diff extends AnAction {
         String fileName = Paths.get(path).getFileName().toString();
         String targetFileName = String.valueOf(cl.getCLNo()) + "_" + fileName;
         String targetFilePath = Paths.get(CodeLine.getCurrentCodeLine().getRepoPath(), Utils.Backup_File, targetFileName).toString();
-        //Configuration.getInstance().m_cfgBean.compApp
+        CompAppBean appPath = Configuration.getInstance().getDefaultCompApp();
+        startCompare(appPath.path, path, targetFilePath);
+    }
+
+    private void startCompare(String appPath, String file1, String file2){
+        try{
+            Runtime run = Runtime.getRuntime();
+            String args = appPath + " " + file1 + " " + file2 + " /lefttitle=\"workspace\" /righttitle=\"source\"";
+            Process p = run.exec(args);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void update(AnActionEvent event){
+        VirtualFile virFile = event.getData(CommonDataKeys.VIRTUAL_FILE);
+        if (virFile == null) {
+            return;
+        }
+        String path = virFile.getPath();
+        File file = new File(path);
+        event.getPresentation().setEnabled(file.canWrite());
     }
 }
