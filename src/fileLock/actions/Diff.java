@@ -42,7 +42,7 @@ public class Diff extends AnAction {
     private void startCompare(String appPath, String file1, String file2){
         try{
             Runtime run = Runtime.getRuntime();
-            String args = appPath + " " + file1 + " " + file2 + " /lefttitle=\"workspace\" /righttitle=\"source\"";
+            String args = appPath + " \"" + file1 + "\" \"" + file2 + "\" /lefttitle=\"workspace\" /righttitle=\"source\"";
             Process p = run.exec(args);
         }catch (Exception e){
             e.printStackTrace();

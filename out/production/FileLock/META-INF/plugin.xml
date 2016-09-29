@@ -49,6 +49,10 @@
       <add-to-group group-id="EditorTabPopupMenu" anchor="last"></add-to-group>
       <add-to-group group-id="EditorPopupMenu" anchor="last"></add-to-group>
     </action>
+    <action class="fileLock.actions.OpenSourcePath" id="ac_openSourcePath" text="Open Source Path" description="Open Source Path">
+      <add-to-group group-id="EditorTabPopupMenu" anchor="last"></add-to-group>
+      <add-to-group group-id="EditorPopupMenu" anchor="last"></add-to-group>
+    </action>
     <!-- Add your actions here -->
     <group id="MyPlugin.FileLock" text="File Lock" description="File Lock">
       <add-to-group group-id="MainMenu" relative-to-action ="HelpMenu" anchor="before"  />
@@ -57,6 +61,7 @@
       <action class="fileLock.actions.Diff" id="ac_main_diff" text="Diff" description="Diff"></action>
       <action class="fileLock.actions.Revert" id="ac_main_revert" text="Revert" description="Revert"></action>
       <action class="fileLock.actions.ViewAllChangeList" id="ac_main_viewAllCL" text="View All Change Lists" description="View All Change Lists"></action>
+      <action class="fileLock.actions.OpenSourcePath" id="ac_main_openSourcePath" text="Open Source Path" description="Open Source Path"></action>
     </group>
 
   </actions>
