@@ -101,13 +101,18 @@ public class ChangeList {
 
     public boolean checkoutFile(String file){
         boolean ret = true;
-
+        if(m_clBean.files.contains(file)){
+            return  ret;
+        }
         m_clBean.files.add(file);
-        String backupFolder = Paths.get(CodeLine.getCurrentCodeLine().getRepoPath(), Utils.Backup_File).toString();
-        ret = Utils.copyFile(file, Paths.get(backupFolder,
+        if(!CodeLine.getCurrentCodeLine().getIsUnderSvn()){
+            String backupFolder = Paths.get(CodeLine.getCurrentCodeLine().getRepoPath(), Utils.Backup_File).toString();
+            ret = Utils.copyFile(file, Paths.get(backupFolder,
                 String.valueOf(m_clBean.clNo) + "_" + Paths.get(file).getFileName().toString()).toString(),
                 true);
-        //save();
+            //save();
+        }
+
         return ret;
     }
 
@@ -116,6 +121,16 @@ public class ChangeList {
 
         if(m_clBean.files.contains(file)){
             m_clBean.files.remove(file);
+            if(!CodeLine.getCurrentCodeLine().getIsUnderSvn()){
+                File temp = new File(file);
+                String fileName = temp.getName();
+                String backupFolder = Paths.get(CodeLine.getCurrentCodeLine().getRepoPath(), Utils.Backup_File).toString();
+                String backupFilePath = Paths.get(backupFolder, String.valueOf(m_clBean.clNo) + "_" + fileName).toString();
+                if(Utils.copyFile(backupFilePath, file, true)){
+                    File backupFile = new File(backupFilePath);
+                    backupFile.delete();
+                }
+            }
         }
 
         return ret;

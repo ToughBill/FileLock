@@ -2,6 +2,7 @@ package fileLock.bo;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import fileLock.config.FileMapping;
 import fileLock.config.Utils;
 
 import java.io.*;
@@ -78,6 +79,9 @@ public class Configuration {
         ret.proPath = path;
         ret.createDate = time;
         ret.repoPath = codeLinePath;
+        String mapFile = path + "\\" + FileMapping.FL_FileMappingPath;
+        File temp = new File(mapFile);
+        ret.isUnderSvn = temp.exists();
         inst.m_cfgBean.codeLine.add(ret);
 
         createDefaultCL(ret);

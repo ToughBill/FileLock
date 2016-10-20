@@ -8,6 +8,7 @@ import fileLock.bo.ChangeList;
 import fileLock.bo.CodeLine;
 import fileLock.bo.CompAppBean;
 import fileLock.bo.Configuration;
+import fileLock.config.FileMapping;
 import fileLock.config.Utils;
 
 import java.io.File;
@@ -31,18 +32,24 @@ public class Diff extends AnAction {
         ChangeList cl = ChangeList.findChangeList(path);
         if (cl == null)
             return;
-
-        String fileName = Paths.get(path).getFileName().toString();
-        String targetFileName = String.valueOf(cl.getCLNo()) + "_" + fileName;
-        String targetFilePath = Paths.get(CodeLine.getCurrentCodeLine().getRepoPath(), Utils.Backup_File, targetFileName).toString();
-        CompAppBean appPath = Configuration.getInstance().getDefaultCompApp();
-        startCompare(appPath.path, path, targetFilePath);
+        Utils.DiffFile(path);
+//        String fileName = Paths.get(path).getFileName().toString();
+//        String targetFilePath;
+//        if(CodeLine.getCurrentCodeLine().getIsUnderSvn()){
+//            targetFilePath = FileMapping.getInstance().getSourcePath(fileName);
+//        } else{
+//            String targetFileName = String.valueOf(cl.getCLNo()) + "_" + fileName;
+//            targetFilePath = Paths.get(CodeLine.getCurrentCodeLine().getRepoPath(), Utils.Backup_File, targetFileName).toString();
+//        }
+//
+//        CompAppBean appPath = Configuration.getInstance().getDefaultCompApp();
+//        startCompare(appPath.path, path, targetFilePath);
     }
 
     private void startCompare(String appPath, String file1, String file2){
         try{
             Runtime run = Runtime.getRuntime();
-            String args = appPath + " \"" + file1 + "\" \"" + file2 + "\" /lefttitle=\"workspace\" /righttitle=\"source\"";
+            String args = appPath + " \"" + file1 + "\" \"" + file2 + "\" /lefttitle=\"base\" /righttitle=\"workspace\"";
             Process p = run.exec(args);
         }catch (Exception e){
             e.printStackTrace();

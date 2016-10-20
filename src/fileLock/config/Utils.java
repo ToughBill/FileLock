@@ -4,6 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.ProjectManager;
+import fileLock.bo.ChangeList;
+import fileLock.bo.CodeLine;
+import fileLock.bo.CompAppBean;
+import fileLock.bo.Configuration;
 
 import java.io.*;
 import java.nio.file.Paths;
@@ -103,5 +107,72 @@ public class Utils {
         }
 
         return ret;
+    }
+
+    public static String exeCmd(String commandStr) {
+        String ret = null;
+        BufferedReader br = null;
+        try {
+            Process p = Runtime.getRuntime().exec(commandStr);
+            br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line = null;
+            StringBuilder sb = new StringBuilder();
+            while ((line = br.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+            ret = sb.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally
+        {
+            if (br != null)
+            {
+                try {
+                    br.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    public static void DiffFile(String path){
+        String fileName = Paths.get(path).getFileName().toString();
+        String baseFilePath;
+        if(CodeLine.getCurrentCodeLine().getIsUnderSvn()){
+            baseFilePath = FileMapping.getInstance().getSourcePath(fileName);
+        } else{
+            ChangeList cl = ChangeList.findChangeList(path);
+            if (cl == null)
+                return;
+            String targetFileName = String.valueOf(cl.getCLNo()) + "_" + fileName;
+            baseFilePath = Paths.get(CodeLine.getCurrentCodeLine().getRepoPath(), Utils.Backup_File, targetFileName).toString();
+        }
+
+        CompAppBean appPath = Configuration.getInstance().getDefaultCompApp();
+        startCompare(appPath.path, baseFilePath, path);
+    }
+
+    private static void startCompare(String appPath, String file1, String file2){
+        try{
+            Runtime run = Runtime.getRuntime();
+            String args = appPath + " \"" + file1 + "\" \"" + file2 + "\" /lefttitle=\"base\" /righttitle=\"workspace\"";
+            Process p = run.exec(args);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void ShowInExplorer(String path){
+        try{
+            Runtime run = Runtime.getRuntime();
+            String args = "explorer.exe /select,\"" + path +"\"";
+            Process p = run.exec(args);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

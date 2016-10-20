@@ -8,4 +8,5 @@ public class CodeLineBean {
     public String createDate;
     public String proPath;
     public String repoPath;
+    public boolean isUnderSvn;
 }

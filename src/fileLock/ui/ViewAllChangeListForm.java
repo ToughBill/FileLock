@@ -6,8 +6,11 @@ package fileLock.ui;
 
 import java.awt.event.*;
 import javax.swing.event.*;
+
 import fileLock.bo.ChangeList;
 import fileLock.bo.CodeLine;
+import fileLock.config.FileMapping;
+import fileLock.config.Utils;
 
 import java.awt.*;
 import java.util.*;
@@ -17,7 +20,6 @@ import javax.swing.GroupLayout;
 import javax.swing.border.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 /**
@@ -315,7 +317,63 @@ public class ViewAllChangeListForm extends JFrame {
         clTree.updateUI();
         clTree.expandRow(0);
         clTree.setRootVisible(false);
+
+        final TreePopup treePopup = new TreePopup(clTree);
+        clTree.addMouseListener(new MouseAdapter() {
+            public void mouseReleased (MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    treePopup.show(e.getComponent(), e.getX(), e.getY());
+                }
+            }
+        });
+
 //        DefaultMutableTreeNode temp = new DefaultMutableTreeNode(clTree.getModel().getRoot());
 //        temp.removeAllChildren();
+    }
+}
+
+class TreePopup extends JPopupMenu {
+    private JTree m_tree;
+    public TreePopup(JTree tree) {
+        m_tree = tree;
+        JMenuItem itemOpen = new JMenuItem("Open");
+        JMenuItem itemOpenSource = new JMenuItem("Open Source");
+        JMenuItem itemDiff = new JMenuItem("Diff");
+        itemOpen.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode)m_tree.getLastSelectedPathComponent();
+                if(node.getLevel() == 3){
+                    String strPath = node.toString();
+
+                }
+            }
+        });
+        itemOpenSource.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode)m_tree.getLastSelectedPathComponent();
+                if(node.getLevel() == 3){
+                    String fileName = node.toString();
+                    String baseFile = FileMapping.getInstance().getSourcePath(fileName);
+                    if(baseFile != null){
+                        Utils.ShowInExplorer(baseFile);
+                    }
+
+                }
+            }
+        });
+        itemDiff.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode)m_tree.getLastSelectedPathComponent();
+                if(node.getLevel() == 3){
+                    String fileName = node.toString();
+                    Utils.DiffFile(fileName);
+                }
+            }
+        });
+
+        add(itemOpen);
+        add(itemOpenSource);
+        add(new JSeparator());
+        add(itemDiff);
     }
 }

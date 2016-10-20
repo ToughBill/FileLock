@@ -16,7 +16,8 @@ public class FileMapping {
 
     private String m_mappingFile;
     private Map<String, List> m_map;
-    public FileMapping(String mappingFile_){
+    private String m_svnTrunkPath;
+    private FileMapping(String mappingFile_){
         m_mappingFile = mappingFile_;
         m_map = new HashMap<String, List>();
         initMap();
@@ -34,8 +35,8 @@ public class FileMapping {
             while ((temp = reader.readLine()) != null){
                 int idx = temp.indexOf('>');
                 if (idx >= 0){
-                    String str1 = temp.substring(1, idx);
-                    String str2 = temp.substring(idx + 1, temp.length() - 1);
+                    String str1 = temp.substring(0, idx);
+                    String str2 = temp.substring(idx + 1, temp.length());
                     System.out.print("initMap: str1 = " + str1);
                     System.out.print("initMap: str2 = " + str2);
                     File tempObj = new File(str1);
@@ -46,6 +47,16 @@ public class FileMapping {
                         List<PathInfo> list = new ArrayList<>();
                         list.add(new PathInfo(str1, tempObj.isFile()));
                         m_map.put(str2, list);
+                    }
+                }
+                else {
+                    idx = temp.indexOf('<');
+                    if (idx >= 0){
+                        String str1 = temp.substring(0, idx);
+                        String str2 = temp.substring(idx + 1, temp.length());
+                        if (str1.equals("SVN_Path")){
+                            m_svnTrunkPath = str2;
+                        }
                     }
                 }
             }
@@ -113,6 +124,14 @@ public class FileMapping {
         }
 
         return ret;
+    }
+
+    public String getSVNTrunkPath(){
+        return m_svnTrunkPath;
+    }
+
+    public String getMappingFile(){
+        return m_mappingFile;
     }
 
     private static FileMapping m_inst;

@@ -26,6 +26,7 @@ public class CodeLine {
     public String getProjectPath(){
         return  m_codeLineBean.proPath;
     }
+    public boolean getIsUnderSvn(){ return m_codeLineBean.isUnderSvn; }
 
     public CodeLine(CodeLineBean codeLineBean){
         m_codeLineBean = codeLineBean;

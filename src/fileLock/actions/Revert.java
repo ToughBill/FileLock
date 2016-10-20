@@ -46,19 +46,19 @@ public class Revert extends AnAction {
         if (cl == null)
             return;
 
-        File file = new File(path);
-        String fileName = file.getName();
-        String backupFolder = Paths.get(CodeLine.getCurrentCodeLine().getRepoPath(), Utils.Backup_File).toString();
-        String backupFilePath = Paths.get(backupFolder, String.valueOf(cl.getCLNo()) + "_" + fileName).toString();
-        if(Utils.copyFile(backupFilePath, path, true)){
+//        File file = new File(path);
+//        String fileName = file.getName();
+//        String backupFolder = Paths.get(CodeLine.getCurrentCodeLine().getRepoPath(), Utils.Backup_File).toString();
+//        String backupFilePath = Paths.get(backupFolder, String.valueOf(cl.getCLNo()) + "_" + fileName).toString();
+//        if(Utils.copyFile(backupFilePath, path, true)){
             //file.setReadOnly();
             cl.revertFile(path);
             cl.save();
-            File backupFile = new File(backupFilePath);
-            backupFile.delete();
+//            File backupFile = new File(backupFilePath);
+//            backupFile.delete();
 
             virFile.refresh(false,false);
-        }
+        //}
     }
 
     @Override
