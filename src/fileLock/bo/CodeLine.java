@@ -1,5 +1,6 @@
 package fileLock.bo;
 
+import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.diff.impl.incrementalMerge.Change;
 import com.intellij.openapi.project.ProjectManager;
 import fileLock.config.Utils;
@@ -7,9 +8,7 @@ import fileLock.config.Utils;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by lbin on 8/1/2016.
@@ -65,6 +64,7 @@ public class CodeLine {
     }
 
     private static CodeLine m_curCodeLine;
+    private static Map<String,CodeLine> m_lstCodeLines;
     public static CodeLine getCurrentCodeLine(){
         if(m_curCodeLine == null){
             String projectPath = ProjectManager.getInstance().getOpenProjects()[0].getBasePath();
@@ -77,6 +77,11 @@ public class CodeLine {
         }
 
         return m_curCodeLine;
+    }
+    public static CodeLine getCurrentCodeLine(String projectPath){
+        if(m_lstCodeLines == null){
+            m_lstCodeLines = new HashMap<>();
+        }
     }
 
     private static String getFolderCreatTime(String folderPath){
