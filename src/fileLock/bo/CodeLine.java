@@ -2,7 +2,10 @@ package fileLock.bo;
 
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.diff.impl.incrementalMerge.Change;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.vfs.*;
+import fileLock.config.CurrentAction;
 import fileLock.config.Utils;
 
 import java.io.*;
@@ -63,25 +66,35 @@ public class CodeLine {
         return temp.substring(0, temp.length() - Utils.JSON_Suffix.length());
     }
 
-    private static CodeLine m_curCodeLine;
     private static Map<String,CodeLine> m_lstCodeLines;
     public static CodeLine getCurrentCodeLine(){
-        if(m_curCodeLine == null){
-            String projectPath = ProjectManager.getInstance().getOpenProjects()[0].getBasePath();
+        CodeLine ret;
+        if(m_lstCodeLines == null){
+            m_lstCodeLines = new HashMap<>();
+        }
+        String projectPath = CurrentAction.getProjectPath();
+        if(m_lstCodeLines.keySet().contains(projectPath)){
+            ret = m_lstCodeLines.get(projectPath);
+        } else {
             String folderCreateTime = getFolderCreatTime(projectPath);
             CodeLineBean codeLineBean = Configuration.getInstance().getCodeLineBean(projectPath, folderCreateTime);
             if (codeLineBean == null){
                 codeLineBean = Configuration.getInstance().createNewCodeLine(projectPath, folderCreateTime);
             }
-            m_curCodeLine = new CodeLine(codeLineBean);
+            ret = new CodeLine(codeLineBean);
+            m_lstCodeLines.put(projectPath, ret);
         }
+//        if(m_curCodeLine == null){
+//            String projectPath = ProjectManager.getInstance().getOpenProjects()[0].getBasePath();
+//            String folderCreateTime = getFolderCreatTime(projectPath);
+//            CodeLineBean codeLineBean = Configuration.getInstance().getCodeLineBean(projectPath, folderCreateTime);
+//            if (codeLineBean == null){
+//                codeLineBean = Configuration.getInstance().createNewCodeLine(projectPath, folderCreateTime);
+//            }
+//            m_curCodeLine = new CodeLine(codeLineBean);
+//        }
 
-        return m_curCodeLine;
-    }
-    public static CodeLine getCurrentCodeLine(String projectPath){
-        if(m_lstCodeLines == null){
-            m_lstCodeLines = new HashMap<>();
-        }
+        return ret;
     }
 
     private static String getFolderCreatTime(String folderPath){

@@ -143,7 +143,7 @@ public class Utils {
         String fileName = Paths.get(path).getFileName().toString();
         String baseFilePath;
         if(CodeLine.getCurrentCodeLine().getIsUnderSvn()){
-            baseFilePath = FileMapping.getInstance().getSourcePath(fileName);
+            baseFilePath = FileMapping.getInstance().getSourcePath(path);
         } else{
             ChangeList cl = ChangeList.findChangeList(path);
             if (cl == null)

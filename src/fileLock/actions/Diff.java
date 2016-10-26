@@ -8,6 +8,7 @@ import fileLock.bo.ChangeList;
 import fileLock.bo.CodeLine;
 import fileLock.bo.CompAppBean;
 import fileLock.bo.Configuration;
+import fileLock.config.CurrentAction;
 import fileLock.config.FileMapping;
 import fileLock.config.Utils;
 
@@ -28,6 +29,7 @@ public class Diff extends AnAction {
         if (virFile == null) {
             return;
         }
+        CurrentAction.setActionEvent(event);
         String path = virFile.getPath();
         ChangeList cl = ChangeList.findChangeList(path);
         if (cl == null)

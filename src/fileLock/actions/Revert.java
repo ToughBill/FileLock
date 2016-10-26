@@ -10,6 +10,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import fileLock.bo.ChangeList;
 import fileLock.bo.CodeLine;
+import fileLock.config.CurrentAction;
 import fileLock.config.Utils;
 
 import java.io.File;
@@ -29,6 +30,7 @@ public class Revert extends AnAction {
         if (virFile == null) {
             return;
         }
+        CurrentAction.setActionEvent(event);
         Editor editor = event.getRequiredData(CommonDataKeys.EDITOR);
         Document doc = editor.getDocument();
         if (FileDocumentManager.getInstance().isDocumentUnsaved(doc)){

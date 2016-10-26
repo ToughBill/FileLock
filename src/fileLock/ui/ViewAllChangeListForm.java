@@ -7,8 +7,10 @@ package fileLock.ui;
 import java.awt.event.*;
 import javax.swing.event.*;
 
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import fileLock.bo.ChangeList;
 import fileLock.bo.CodeLine;
+import fileLock.config.CurrentAction;
 import fileLock.config.FileMapping;
 import fileLock.config.Utils;
 
@@ -26,9 +28,17 @@ import javax.swing.tree.TreePath;
  * @author Bin Li
  */
 public class ViewAllChangeListForm extends JFrame {
+    private AnActionEvent m_fromActEv;
     public ViewAllChangeListForm() {
         initComponents();
         initData();
+    }
+
+    public void setFromAction(AnActionEvent actEv){
+        m_fromActEv = actEv;
+    }
+    public AnActionEvent getFromAction(){
+        return m_fromActEv;
     }
 
     private void okButtonActionPerformed(ActionEvent e) {
@@ -318,7 +328,7 @@ public class ViewAllChangeListForm extends JFrame {
         clTree.expandRow(0);
         clTree.setRootVisible(false);
 
-        final TreePopup treePopup = new TreePopup(clTree);
+        final TreePopup treePopup = new TreePopup(clTree, this);
         clTree.addMouseListener(new MouseAdapter() {
             public void mouseReleased (MouseEvent e) {
                 if (e.isPopupTrigger()) {
@@ -334,8 +344,10 @@ public class ViewAllChangeListForm extends JFrame {
 
 class TreePopup extends JPopupMenu {
     private JTree m_tree;
-    public TreePopup(JTree tree) {
+    private ViewAllChangeListForm m_form;
+    public TreePopup(JTree tree, ViewAllChangeListForm form) {
         m_tree = tree;
+        m_form = form;
         JMenuItem itemOpen = new JMenuItem("Open");
         JMenuItem itemOpenSource = new JMenuItem("Open Source");
         JMenuItem itemDiff = new JMenuItem("Diff");
@@ -366,6 +378,7 @@ class TreePopup extends JPopupMenu {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode)m_tree.getLastSelectedPathComponent();
                 if(node.getLevel() == 3){
                     String fileName = node.toString();
+                    CurrentAction.setActionEvent(m_form.getFromAction());
                     Utils.DiffFile(fileName);
                 }
             }

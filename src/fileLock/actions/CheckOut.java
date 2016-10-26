@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.vfs.VirtualFile;
+import fileLock.config.CurrentAction;
 import fileLock.bo.ChangeList;
 
 import java.io.File;
@@ -22,6 +23,8 @@ public class CheckOut extends AnAction {
         if (virFile == null) {
             return;
         }
+        CurrentAction.setActionEvent(event);
+
         String path = virFile.getPath();
         File file = new File(path);
         if (!file.canWrite()){
@@ -48,6 +51,7 @@ public class CheckOut extends AnAction {
         if (virFile == null) {
             return;
         }
+
         String path = virFile.getPath();
         File file = new File(path);
         event.getPresentation().setEnabled(!file.canWrite());
