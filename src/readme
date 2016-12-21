@@ -12,7 +12,7 @@ config:
     ],
     "codeLines":[
         {
-            "no": 2,
+            "no": 1,
             "createDate": "20160728",
             "path": "",
             "repoNo": 2,
