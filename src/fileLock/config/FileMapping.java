@@ -14,21 +14,22 @@ import java.util.*;
 public class FileMapping {
     public static final String FL_FileMappingPath = "FL_FileMapping";
 
-    private String m_mappingFile;
+    private String m_projectPath;
     private Map<String, List> m_map;
     private String m_svnTrunkPath;
-    private FileMapping(String mappingFile_){
-        m_mappingFile = mappingFile_;
+    public FileMapping(String projectPath_){
+        m_projectPath = projectPath_;
         m_map = new HashMap<String, List>();
         initMap();
     }
 
     private void initMap(){
-        File file = new File(m_mappingFile);
+        //File file = new File(m_mappingFile);
         BufferedReader reader = null;
         try{
-            String projectPath = ProjectManager.getInstance().getOpenProjects()[0].getBasePath();
-            String mapFilePath = projectPath + "\\" + file;
+            //String projectPath = ProjectManager.getInstance().getOpenProjects()[0].getBasePath();
+            //String projectPath = CurrentAction.getProjectPath();
+            String mapFilePath = m_projectPath + "\\" + FileMapping.FL_FileMappingPath;
             System.out.print("initMap: mapFilePath = " + mapFilePath);
             reader = new BufferedReader(new FileReader(mapFilePath));
             String temp = null;
@@ -128,10 +129,6 @@ public class FileMapping {
 
     public String getSVNTrunkPath(){
         return m_svnTrunkPath;
-    }
-
-    public String getMappingFile(){
-        return m_mappingFile;
     }
 
     private static FileMapping m_inst;

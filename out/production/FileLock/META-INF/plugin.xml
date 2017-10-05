@@ -48,14 +48,22 @@
       <add-to-group group-id="EditorTabPopupMenu" anchor="last"></add-to-group>
       <add-to-group group-id="EditorPopupMenu" anchor="last"></add-to-group>
     </action>
-    <action class="fileLock.actions.ViewAllChangeList" id="ac_viewAllCL" text="View All Change Lists" description="View All Change Lists">
+
+
+    <group id="otherActionsGrp" text="File Lock..." description="File Lock..." popup="true">
       <add-to-group group-id="EditorTabPopupMenu" anchor="last"></add-to-group>
       <add-to-group group-id="EditorPopupMenu" anchor="last"></add-to-group>
-    </action>
-    <action class="fileLock.actions.OpenSourcePath" id="ac_openSourcePath" text="Open Source Path" description="Open Source Path">
-      <add-to-group group-id="EditorTabPopupMenu" anchor="last"></add-to-group>
-      <add-to-group group-id="EditorPopupMenu" anchor="last"></add-to-group>
-    </action>
+
+      <!--<separator/>-->
+      <!--<reference ref="ac_viewAllCL" />-->
+      <!--<reference ref="ac_openSourcePath" />-->
+      <action class="fileLock.actions.ViewAllChangeList" id="ac_viewAllCL" text="View All Change Lists" description="View All Change Lists"></action>
+      <action class="fileLock.actions.OpenSourcePath" id="ac_openSourcePath" text="Open Source Path" description="Open Source Path"></action>
+      <action class="fileLock.actions.SetProjectFilesToReadOnly" id="ac_setProjectToReadOnly" text="Set Project Files to Readonly" description="Set project files to read only"></action>
+      <action class="fileLock.actions.MergeChangesToSVNSource" id="ac_mergeChangesToSVNSource" text="Merge Changes to SVN Source" description="Merge changes to svn source"></action>
+      <separator/>
+    </group>
+
     <!-- Add your actions here -->
     <group id="MyPlugin.FileLock" text="File Lock" description="File Lock">
       <add-to-group group-id="MainMenu" relative-to-action ="HelpMenu" anchor="before"  />
@@ -65,6 +73,7 @@
       <action class="fileLock.actions.Revert" id="ac_main_revert" text="Revert" description="Revert"></action>
       <action class="fileLock.actions.ViewAllChangeList" id="ac_main_viewAllCL" text="View All Change Lists" description="View All Change Lists"></action>
       <action class="fileLock.actions.OpenSourcePath" id="ac_main_openSourcePath" text="Open Source Path" description="Open Source Path"></action>
+
     </group>
 
   </actions>

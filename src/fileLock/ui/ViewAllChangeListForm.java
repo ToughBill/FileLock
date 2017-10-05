@@ -8,6 +8,7 @@ import java.awt.event.*;
 import javax.swing.event.*;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.diff.impl.incrementalMerge.Change;
 import fileLock.bo.ChangeList;
 import fileLock.bo.CodeLine;
 import fileLock.config.CurrentAction;
@@ -317,6 +318,7 @@ public class ViewAllChangeListForm extends JFrame {
         List<ChangeList> cls = codeLine.getAllChangeList();
         for (ChangeList cl : cls){
             DefaultMutableTreeNode clNode = new DefaultMutableTreeNode(cl);
+            clNode.setUserObject(cl);
             for (String str : cl.getFiles()){
                 DefaultMutableTreeNode clFileNode = new DefaultMutableTreeNode(str);
                 clNode.add(clFileNode);
@@ -351,6 +353,8 @@ class TreePopup extends JPopupMenu {
         JMenuItem itemOpen = new JMenuItem("Open");
         JMenuItem itemOpenSource = new JMenuItem("Open Source");
         JMenuItem itemDiff = new JMenuItem("Diff");
+        JMenuItem itemRevert = new JMenuItem("Revert");
+        JMenu clsMenu = new JMenu("Move to Change list...");
         itemOpen.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode)m_tree.getLastSelectedPathComponent();
@@ -365,7 +369,7 @@ class TreePopup extends JPopupMenu {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode)m_tree.getLastSelectedPathComponent();
                 if(node.getLevel() == 3){
                     String fileName = node.toString();
-                    String baseFile = FileMapping.getInstance().getSourcePath(fileName);
+                    String baseFile = CodeLine.getCurrentCodeLine().getFileMap().getSourcePath(fileName);
                     if(baseFile != null){
                         Utils.ShowInExplorer(baseFile);
                     }
@@ -383,10 +387,62 @@ class TreePopup extends JPopupMenu {
                 }
             }
         });
+        itemRevert.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode)m_tree.getLastSelectedPathComponent();
+                if(node.getLevel() == 3){
+                    String fileName = node.toString();
+                    CurrentAction.setActionEvent(m_form.getFromAction());
+                    ChangeList oriCl = (ChangeList)((DefaultMutableTreeNode)node.getParent()).getUserObject();
+                    if(oriCl != null){
+                        oriCl.revertFile(fileName);
+                        oriCl.save();
 
+                    }
+                }
+            }
+        });
+        List<ChangeList> clList = CodeLine.getCurrentCodeLine().getAllChangeList();
+        for (ChangeList cl : clList){
+            JMenuItem clMenu = new JMenuItem(cl.getCLDesc());
+            clMenu.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    DefaultMutableTreeNode node = (DefaultMutableTreeNode)m_tree.getLastSelectedPathComponent();
+                    if(node.getLevel() == 3){
+                        ChangeList oriCl = (ChangeList)((DefaultMutableTreeNode)node.getParent()).getUserObject();
+                        if(cl == null){
+                            System.out.println("missing cl data");
+                            return;
+                        }
+                        if(cl.getCLNo() == oriCl.getCLNo())
+                            return;
+
+                        String fileName = node.toString();
+                        cl.addFile(oriCl, fileName);
+
+                        Enumeration<DefaultMutableTreeNode> iter = node.getParent().getParent().children();
+                        while (iter.hasMoreElements()){
+                            DefaultMutableTreeNode tempNode = iter.nextElement();
+                            ChangeList tempCl = (ChangeList)tempNode.getUserObject();
+                            if(tempCl.getCLNo() == cl.getCLNo()){
+                                DefaultMutableTreeNode cloneNode = (DefaultMutableTreeNode)node.clone();
+                                tempNode.add(cloneNode);
+                                node.removeFromParent();
+                                m_tree.revalidate();
+                                break;
+                            }
+                        }
+                        node.removeFromParent();
+                    }
+                }
+            });
+            clsMenu.add(clMenu);
+        }
         add(itemOpen);
         add(itemOpenSource);
         add(new JSeparator());
         add(itemDiff);
+        add(clsMenu);
     }
 }

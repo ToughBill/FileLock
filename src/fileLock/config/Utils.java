@@ -142,16 +142,26 @@ public class Utils {
     public static void DiffFile(String path){
         String fileName = Paths.get(path).getFileName().toString();
         String baseFilePath;
-        if(CodeLine.getCurrentCodeLine().getIsUnderSvn()){
-            baseFilePath = FileMapping.getInstance().getSourcePath(path);
-        } else{
+//        if(CodeLine.getCurrentCodeLine().getIsUnderSvn()){
+//            baseFilePath = CodeLine.getCurrentCodeLine().getFileMap().getSourcePath(path);
+//        } else{
             ChangeList cl = ChangeList.findChangeList(path);
             if (cl == null)
                 return;
             String targetFileName = String.valueOf(cl.getCLNo()) + "_" + fileName;
             baseFilePath = Paths.get(CodeLine.getCurrentCodeLine().getRepoPath(), Utils.Backup_File, targetFileName).toString();
+        //}
+
+        CompAppBean appPath = Configuration.getInstance().getDefaultCompApp();
+        startCompare(appPath.path, baseFilePath, path);
+    }
+
+    public static void MergeChangesToSvnSource(String path){
+        if(!CodeLine.getCurrentCodeLine().getIsUnderSvn()){
+            return;
         }
 
+        String baseFilePath = CodeLine.getCurrentCodeLine().getFileMap().getSourcePath(path);
         CompAppBean appPath = Configuration.getInstance().getDefaultCompApp();
         startCompare(appPath.path, baseFilePath, path);
     }
@@ -174,5 +184,14 @@ public class Utils {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public static String getExtensionPath(){
+        String ret = CurrentAction.getProjectPath();
+        if(ret != null){
+
+        }
+
+        return ret;
     }
 }

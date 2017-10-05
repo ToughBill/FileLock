@@ -1,16 +1,15 @@
 package fileLock.bo;
 
-import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.diff.impl.incrementalMerge.Change;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.vfs.*;
+
 import fileLock.config.CurrentAction;
+import fileLock.config.FileMapping;
 import fileLock.config.Utils;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 /**
@@ -18,6 +17,7 @@ import java.util.*;
  */
 public class CodeLine {
     private CodeLineBean m_codeLineBean;
+    private FileMapping m_fileMap;
 
     public int getCodeLineNo(){
         return m_codeLineBean.codeLineNo;
@@ -32,10 +32,15 @@ public class CodeLine {
 
     public CodeLine(CodeLineBean codeLineBean){
         m_codeLineBean = codeLineBean;
+        m_fileMap = new FileMapping(CurrentAction.getProjectPath());
     }
 
     public String toString(){
         return m_codeLineBean.proPath + "   " + m_codeLineBean.createDate;
+    }
+
+    public FileMapping getFileMap(){
+        return m_fileMap;
     }
 
     public List<ChangeList> getAllChangeList(){
@@ -81,18 +86,11 @@ public class CodeLine {
             if (codeLineBean == null){
                 codeLineBean = Configuration.getInstance().createNewCodeLine(projectPath, folderCreateTime);
             }
+            //String mapFileCreateTime = getFileCreateTime(projectPath+"\\Extension\\FL_FileMapping");
+
             ret = new CodeLine(codeLineBean);
             m_lstCodeLines.put(projectPath, ret);
         }
-//        if(m_curCodeLine == null){
-//            String projectPath = ProjectManager.getInstance().getOpenProjects()[0].getBasePath();
-//            String folderCreateTime = getFolderCreatTime(projectPath);
-//            CodeLineBean codeLineBean = Configuration.getInstance().getCodeLineBean(projectPath, folderCreateTime);
-//            if (codeLineBean == null){
-//                codeLineBean = Configuration.getInstance().createNewCodeLine(projectPath, folderCreateTime);
-//            }
-//            m_curCodeLine = new CodeLine(codeLineBean);
-//        }
 
         return ret;
     }
@@ -118,6 +116,18 @@ public class CodeLine {
             result = getTime;
         } catch (java.io.IOException exc) {
             exc.printStackTrace();
+        }
+
+        return result;
+    }
+
+    private static String getFileCreateTime(String filePath){
+        String result = null;
+        try{
+            BasicFileAttributes attr = Files.readAttributes(Paths.get(filePath), BasicFileAttributes.class);
+            result = attr.creationTime().toString();
+        }catch (IOException e){
+
         }
 
         return result;

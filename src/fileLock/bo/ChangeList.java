@@ -3,6 +3,7 @@ package fileLock.bo;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.intellij.openapi.diff.impl.incrementalMerge.Change;
+import fileLock.config.FileMapping;
 import fileLock.config.Utils;
 
 import java.io.File;
@@ -105,13 +106,33 @@ public class ChangeList {
             return  ret;
         }
         m_clBean.files.add(file);
-        if(!CodeLine.getCurrentCodeLine().getIsUnderSvn()){
+        //if(!CodeLine.getCurrentCodeLine().getIsUnderSvn()){
             String backupFolder = Paths.get(CodeLine.getCurrentCodeLine().getRepoPath(), Utils.Backup_File).toString();
             ret = Utils.copyFile(file, Paths.get(backupFolder,
                 String.valueOf(m_clBean.clNo) + "_" + Paths.get(file).getFileName().toString()).toString(),
                 true);
             //save();
+        //}
+
+        return ret;
+    }
+
+    public boolean addFile(ChangeList oriCL, String filePath){
+        boolean ret = true;
+        if(!oriCL.getFiles().contains(filePath)){
+            return ret;
         }
+
+        String backupFolder = Paths.get(CodeLine.getCurrentCodeLine().getRepoPath(), Utils.Backup_File).toString();
+        String oriBackFile = Paths.get(backupFolder,
+                String.valueOf(oriCL.getCLNo()) + "_" + Paths.get(filePath).getFileName().toString()).toString();
+        String newBackFile = Paths.get(backupFolder,
+                String.valueOf(m_clBean.clNo) + "_" + Paths.get(filePath).getFileName().toString()).toString();
+        Utils.copyFile(oriBackFile, newBackFile, true);
+        oriCL.getFiles().remove(filePath);
+        oriCL.save();
+        m_clBean.files.add(filePath);
+        save();
 
         return ret;
     }
@@ -121,15 +142,20 @@ public class ChangeList {
 
         if(m_clBean.files.contains(file)){
             m_clBean.files.remove(file);
-            if(!CodeLine.getCurrentCodeLine().getIsUnderSvn()){
+            String oriFilePath = "";
+            if(CodeLine.getCurrentCodeLine().getIsUnderSvn()){
+                oriFilePath = CodeLine.getCurrentCodeLine().getFileMap().getSourcePath(file);
+            } else {
                 File temp = new File(file);
                 String fileName = temp.getName();
                 String backupFolder = Paths.get(CodeLine.getCurrentCodeLine().getRepoPath(), Utils.Backup_File).toString();
-                String backupFilePath = Paths.get(backupFolder, String.valueOf(m_clBean.clNo) + "_" + fileName).toString();
-                if(Utils.copyFile(backupFilePath, file, true)){
-                    File backupFile = new File(backupFilePath);
+                oriFilePath = Paths.get(backupFolder, String.valueOf(m_clBean.clNo) + "_" + fileName).toString();
+            }
+            if(Utils.copyFile(oriFilePath, file, true)){
+                //if(!CodeLine.getCurrentCodeLine().getIsUnderSvn()){
+                    File backupFile = new File(oriFilePath);
                     backupFile.delete();
-                }
+                //}
             }
         }
 

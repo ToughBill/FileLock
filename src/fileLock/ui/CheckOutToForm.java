@@ -294,7 +294,7 @@ public class CheckOutToForm extends JFrame {
     }
 
     private void initDataFromSvn(){
-        String cmd = "cmd.exe /c D: && cd \"" + FileMapping.getInstance().getSVNTrunkPath() + "\" && svn st | find /V \"?\"";
+        String cmd = "cmd.exe /c D: && cd \"" + CodeLine.getCurrentCodeLine().getFileMap().getSVNTrunkPath() + "\" && svn st | find /V \"?\"";
         String clsStr = Utils.exeCmd(cmd);
         System.out.print("clsStr:" + clsStr);
         String[] lines = clsStr.split("\n");
