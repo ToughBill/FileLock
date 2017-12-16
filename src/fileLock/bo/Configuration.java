@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import fileLock.config.FileMapping;
 import fileLock.config.Utils;
 
+import javax.rmi.CORBA.Util;
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.Calendar;
@@ -19,11 +20,46 @@ public class Configuration {
     private Configuration(){ }
 
     private static Configuration m_instance;
+    static {
+        if (m_instance == null){
+            try{
+                // init config.json file
+                String path = Utils.getDataFolderPath();
+                Utils.ensurePathExists(path, true);
+                String configPath = Paths.get(path, Utils.ConfigFileName).toString();
+                Utils.ensurePathExists(configPath, false);
+                Utils.writeFile(configPath, Utils.ConfigureFileTemplate);
+
+//                File file = new File(configPath);
+//                InputStreamReader reader = new InputStreamReader(new FileInputStream(file));
+//                BufferedReader br = new BufferedReader(reader);
+//                String temp, objStr = "";
+//                while ((temp = br.readLine()) != null) {
+//                    objStr += temp;
+//                }
+                Gson gson = new Gson();
+                java.lang.reflect.Type type = new TypeToken<ConfigurationBean>() {}.getType();
+                m_instance = new Configuration();
+                m_instance.m_cfgBean = gson.fromJson(Utils.ConfigureFileTemplate, type);
+
+                //init codelines folder
+                String clFolderPath = Utils.getCodeLineFolder();
+                Utils.ensurePathExists(clFolderPath, true);
+                String clConfigPath = Paths.get(clFolderPath, Utils.CodeLineEntriesFileName).toString();
+                Utils.ensurePathExists(clConfigPath, false);
+                Utils.writeFile(clConfigPath, Utils.CodeLineEntryFileTemplate);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
     public static Configuration getInstance(){
         if (m_instance == null){
             try{
-                String configPath = Utils.getDataFolderPath();
-                File file = new File(Paths.get(configPath, Utils.ConfigFileName).toString());
+                String path = Utils.getDataFolderPath();
+                String configPath = Paths.get(path, Utils.ConfigFileName).toString();
+                Configuration.EnsureConfigurationFileExists(configPath);
+                File file = new File(configPath);
                 InputStreamReader reader = new InputStreamReader(new FileInputStream(file));
                 BufferedReader br = new BufferedReader(reader);
                 String temp, objStr = "";
@@ -43,6 +79,19 @@ public class Configuration {
         return m_instance;
     }
 
+    public CodeLineBean getCodeLineBean(String path){
+        CodeLineBean ret = null;
+        Configuration inst = Configuration.getInstance();
+        for(int i = 0; i < inst.m_cfgBean.codeLine.size(); i++){
+            CodeLineBean temp = inst.m_cfgBean.codeLine.get(i);
+            if (temp.proPath.equals(path)){
+                ret = temp;
+                break;
+            }
+        }
+
+        return ret;
+    }
     public CodeLineBean getCodeLineBean(String path, String time){
         CodeLineBean ret = null;
         Configuration inst = Configuration.getInstance();
@@ -55,6 +104,33 @@ public class Configuration {
         }
 
         return ret;
+    }
+
+    public static void EnsureConfigurationFileExists(String filePath){
+        File file = new File(filePath);
+        if(!file.exists()){
+            System.out.print("@@ EnsureConfigurationFileExists: file is not exists, " + filePath);
+            try{
+                file.createNewFile();
+                FileOutputStream out = new FileOutputStream(file,false);
+                out.write(Utils.ConfigureFileTemplate.getBytes());
+                out.close();
+                System.out.print("@@ EnsureConfigurationFileExists: file created");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        } else {
+            System.out.print("@@ EnsureConfigurationFileExists: file is exists, " + filePath);
+        }
+
+    }
+
+    public boolean addCodeLine(CodeLineBean line){
+        boolean ret;
+        Configuration inst = Configuration.getInstance();
+        inst.m_cfgBean.codeLine.add(line);
+        ret = save();
+        return  ret;
     }
 
     public CodeLineBean createNewCodeLine(String path, String time){
@@ -75,7 +151,7 @@ public class Configuration {
         dir2.mkdir();
 
         ret = new CodeLineBean();
-        ret.codeLineNo = maxNo + 1;
+        ret.codeLineNo = newCodeLineNo;
         ret.proPath = path;
         ret.createDate = time;
         ret.repoPath = codeLinePath;

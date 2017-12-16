@@ -30,6 +30,10 @@ public class FileMapping {
             //String projectPath = ProjectManager.getInstance().getOpenProjects()[0].getBasePath();
             //String projectPath = CurrentAction.getProjectPath();
             String mapFilePath = m_projectPath + "\\" + FileMapping.FL_FileMappingPath;
+            File mapFile = new File(mapFilePath);
+            if(!mapFile.exists()){
+                return;
+            }
             System.out.print("initMap: mapFilePath = " + mapFilePath);
             reader = new BufferedReader(new FileReader(mapFilePath));
             String temp = null;

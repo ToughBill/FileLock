@@ -421,7 +421,9 @@ class TreePopup extends JPopupMenu {
                         String fileName = node.toString();
                         cl.addFile(oriCl, fileName);
 
-                        Enumeration<DefaultMutableTreeNode> iter = node.getParent().getParent().children();
+                        //DefaultMutableTreeNode tempNode = (DefaultMutableTreeNode)node.getParent().getParent();
+                        //Enumeration<DefaultMutableTreeNode> iter = tempNode.children();
+                        Enumeration<DefaultMutableTreeNode> iter = ((DefaultMutableTreeNode)(node.getParent().getParent())).children();
                         while (iter.hasMoreElements()){
                             DefaultMutableTreeNode tempNode = iter.nextElement();
                             ChangeList tempCl = (ChangeList)tempNode.getUserObject();

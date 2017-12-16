@@ -18,10 +18,15 @@ import java.nio.file.Paths;
 public class Utils {
     public static final String DataFolderName = "FileLock_Data";
     public static final String ShelvedCLFolderName = "shelvedCL";
+    public static final String CodeLineFolderName = "codelines";
     public static final String ConfigFileName = "config.json";
+    public static final String CodeLineEntriesFileName = "codelines.json";
+    public static final String CodeLineBeanFileName = "codeline.json";
     public static final String JSON_Suffix = ".json";
     public static final String Backup_File = "backup_file";
-    public static final String CL_Template = "{\"clNo\":%d,\"createDate\":%d,\"codeLine\":%d,\"files\":[],\"desc\":\"%s\",\"seelvedCL\":%d}";
+    public static final String ConfigureFileTemplate = "{\"compApp\":[]}";
+    public static final String CodeLineEntryFileTemplate = "{\"codeLineEntries\":[], \"nextCodeLineNo\":1}";
+    public static final String CL_Template = "{\"clNo\":%d,\"createDate\":%dcodeLine,\"\":%d,\"files\":[],\"desc\":\"%s\"}";
 
     public static String getDataFolderPath(){
         String userFolder = System.getProperty("user.home");
@@ -32,6 +37,10 @@ public class Utils {
         }
 
         return path;
+    }
+    public static String getCodeLineFolder(){
+        String dtFolder = getDataFolderPath();
+        return Paths.get(dtFolder, CodeLineFolderName).toString();
     }
 
     public static String readFile(String filePath) throws Exception{
@@ -107,6 +116,29 @@ public class Utils {
         }
 
         return ret;
+    }
+
+    public static void ensurePathExists(String path, boolean isDir){
+        File file = new File(path);
+        if(!file.exists()){
+            System.out.print("@@ EnsurePathExists: file is not exists, " + path);
+            try{
+                if(isDir){
+                    file.mkdir();
+                } else {
+                    file.createNewFile();
+                }
+
+                FileOutputStream out = new FileOutputStream(file,false);
+                out.write(Utils.ConfigureFileTemplate.getBytes());
+                out.close();
+                System.out.print("@@ EnsurePathExists: file created");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        } else {
+            System.out.print("@@ EnsurePathExists: file is exists, " + path);
+        }
     }
 
     public static String exeCmd(String commandStr) {
