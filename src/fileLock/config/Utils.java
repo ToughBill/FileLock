@@ -118,10 +118,14 @@ public class Utils {
         return ret;
     }
 
+    public static boolean isPathExists(String path){
+        File file = new File(path);
+        return file.exists();
+    }
     public static void ensurePathExists(String path, boolean isDir){
         File file = new File(path);
         if(!file.exists()){
-            System.out.print("@@ EnsurePathExists: file is not exists, " + path);
+            System.out.print("@@ EnsurePathExists: path is not exists, " + path + "\n");
             try{
                 if(isDir){
                     file.mkdir();
@@ -129,15 +133,15 @@ public class Utils {
                     file.createNewFile();
                 }
 
-                FileOutputStream out = new FileOutputStream(file,false);
-                out.write(Utils.ConfigureFileTemplate.getBytes());
-                out.close();
-                System.out.print("@@ EnsurePathExists: file created");
+//                FileOutputStream out = new FileOutputStream(file,false);
+//                out.write(Utils.ConfigureFileTemplate.getBytes());
+//                out.close();
+                System.out.print("@@ EnsurePathExists: path created\n");
             }catch (Exception e){
                 e.printStackTrace();
             }
         } else {
-            System.out.print("@@ EnsurePathExists: file is exists, " + path);
+            System.out.print("@@ EnsurePathExists: path is exists, " + path + "\n");
         }
     }
 

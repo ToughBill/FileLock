@@ -20,27 +20,20 @@ public class Configuration {
     private Configuration(){ }
 
     private static Configuration m_instance;
-    static {
-        if (m_instance == null){
-            try{
-                // init config.json file
-                String path = Utils.getDataFolderPath();
+    public static void initSettings(){
+        try{
+            // init config.json file
+            String path = Utils.getDataFolderPath();
+            String configPath = Paths.get(path, Utils.ConfigFileName).toString();
+            if(!Utils.isPathExists(path)){
                 Utils.ensurePathExists(path, true);
-                String configPath = Paths.get(path, Utils.ConfigFileName).toString();
                 Utils.ensurePathExists(configPath, false);
                 Utils.writeFile(configPath, Utils.ConfigureFileTemplate);
 
-//                File file = new File(configPath);
-//                InputStreamReader reader = new InputStreamReader(new FileInputStream(file));
-//                BufferedReader br = new BufferedReader(reader);
-//                String temp, objStr = "";
-//                while ((temp = br.readLine()) != null) {
-//                    objStr += temp;
-//                }
-                Gson gson = new Gson();
-                java.lang.reflect.Type type = new TypeToken<ConfigurationBean>() {}.getType();
-                m_instance = new Configuration();
-                m_instance.m_cfgBean = gson.fromJson(Utils.ConfigureFileTemplate, type);
+//                Gson gson = new Gson();
+//                java.lang.reflect.Type type = new TypeToken<ConfigurationBean>() {}.getType();
+//                m_instance = new Configuration();
+//                m_instance.m_cfgBean = gson.fromJson(Utils.ConfigureFileTemplate, type);
 
                 //init codelines folder
                 String clFolderPath = Utils.getCodeLineFolder();
@@ -48,10 +41,18 @@ public class Configuration {
                 String clConfigPath = Paths.get(clFolderPath, Utils.CodeLineEntriesFileName).toString();
                 Utils.ensurePathExists(clConfigPath, false);
                 Utils.writeFile(clConfigPath, Utils.CodeLineEntryFileTemplate);
-            }catch (Exception e){
-                e.printStackTrace();
             }
+
+            String str = Utils.readFile(configPath);
+            Gson gson = new Gson();
+            java.lang.reflect.Type type = new TypeToken<ConfigurationBean>() {}.getType();
+            m_instance = new Configuration();
+            m_instance.m_cfgBean = gson.fromJson(str, type);
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
     }
     public static Configuration getInstance(){
         if (m_instance == null){
