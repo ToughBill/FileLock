@@ -22,7 +22,7 @@ public class CodeLineManager {
     private void initBean(){
         try{
             String path = Utils.getCodeLineFolder();
-            File file = new File(path);
+            File file = new File(Paths.get(path, Utils.CodeLineEntriesFileName).toString());
             if(file.exists()){
                 InputStreamReader reader = new InputStreamReader(new FileInputStream(file));
                 BufferedReader br = new BufferedReader(reader);
@@ -97,12 +97,9 @@ public class CodeLineManager {
         return getCodeLineManager()._addCodeLineEntry(projPath, codeLineNo);
     }
 
-    private static Map<String,CodeLine> m_lstCodeLines;
+    private static Map<String,CodeLine> m_lstCodeLines = new HashMap<>();
     public static CodeLine getCurrentCodeLine(){
         CodeLine ret = null;
-        if(m_lstCodeLines == null){
-            m_lstCodeLines = new HashMap<>();
-        }
         String projectPath = CurrentAction.getProjectPath();
         if(m_lstCodeLines.keySet().contains(projectPath)){
             ret = m_lstCodeLines.get(projectPath);
@@ -128,9 +125,9 @@ public class CodeLineManager {
     public static CodeLine createCodeLine(String projectPath){
         CodeLineBean clbean = null;
         try {
-            // init changelists folder
+            // create changelists folder
             int newCodeLineNo = CodeLineManager.getNextCodeLineNo();
-            String codeLinePath = Paths.get(Utils.getDataFolderPath(), String.valueOf(newCodeLineNo)).toString();
+            String codeLinePath = Paths.get(Utils.getCodeLineFolder(), String.valueOf(newCodeLineNo)).toString();
             File dir = new File(codeLinePath);
             dir.mkdir();
             File dir2 = new File(Paths.get(codeLinePath, Utils.ChangeListsFolder).toString());
@@ -156,7 +153,7 @@ public class CodeLineManager {
             CodeLineManager.addCodeLineEntry(projectPath, newCodeLineNo);
 
             // create default changelist
-            createDefaultCL(clbean);
+            ChangeList.createDefaultCL(clbean);
             setProjectFilesToReadonly(projectPath);
         } catch (IOException e){
             e.printStackTrace();
@@ -167,26 +164,7 @@ public class CodeLineManager {
 
         return codeLine;
     }
-    public static boolean createDefaultCL(CodeLineBean lineCfg){
-        boolean ret = true;
 
-        String clFilePath = Paths.get(lineCfg.repoPath, Utils.ChangeListsFolder, ChangeList.Default_CL_No + Utils.JSON_Suffix).toString();
-        try{
-            File file = new File(clFilePath);
-            if (!file.exists()){
-                file.createNewFile();
-
-                String txt = String.format(Utils.CL_Template, ChangeList.Default_CL_No,
-                        Calendar.getInstance().getTimeInMillis(), lineCfg.codeLineNo, "Default");
-                Utils.writeFile(clFilePath, txt);
-            }
-        } catch (IOException e){
-            e.printStackTrace();
-            ret = false;
-        }
-
-        return ret;
-    }
     private static void setProjectFilesToReadonly(String projectPath){
         try{
             Process p = Runtime.getRuntime().exec("cmd /C cd \"" + projectPath + "\" && attrib +R * /S /D");

@@ -41,7 +41,7 @@ public class Diff extends AnAction {
 //            targetFilePath = FileMapping.getInstance().getSourcePath(fileName);
 //        } else{
 //            String targetFileName = String.valueOf(cl.getCLNo()) + "_" + fileName;
-//            targetFilePath = Paths.get(CodeLineManager.getCurrentCodeLine().getRepoPath(), Utils.Backup_File, targetFileName).toString();
+//            targetFilePath = Paths.get(CodeLineManager.getCurrentCodeLine().getRepoPath(), Utils.BackupFilesFolder, targetFileName).toString();
 //        }
 //
 //        CompAppBean appPath = Configuration.getInstance().getDefaultCompApp();

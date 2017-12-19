@@ -2,13 +2,13 @@ package fileLock.bo;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.intellij.openapi.diff.impl.incrementalMerge.Change;
 import fileLock.config.CodeLineManager;
-import fileLock.config.FileMapping;
 import fileLock.config.Utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -67,7 +67,7 @@ public class ChangeList {
     }
     public String getCLPath(int clNo){
         CodeLine codeLine = CodeLineManager.getCurrentCodeLine();
-        return Paths.get(codeLine.getRepoPath(), String.valueOf(clNo) + Utils.JSON_Suffix).toString();
+        return Paths.get(codeLine.getRepoPath(), Utils.ChangeListsFolder, String.valueOf(clNo), Utils.ChangeListBeanFileName).toString();
     }
     public long getTime(){
         return m_clBean.createDate;
@@ -108,7 +108,7 @@ public class ChangeList {
         }
         m_clBean.files.add(file);
         //if(!CodeLineManager.getCurrentCodeLine().getIsUnderSvn()){
-            String backupFolder = Paths.get(CodeLineManager.getCurrentCodeLine().getRepoPath(), Utils.Backup_File).toString();
+            String backupFolder = Paths.get(CodeLineManager.getCurrentCodeLine().getRepoPath(), Utils.ChangeListsFolder, String.valueOf(m_clBean.clNo), Utils.BackupFilesFolder).toString();
             ret = Utils.copyFile(file, Paths.get(backupFolder,
                 String.valueOf(m_clBean.clNo) + "_" + Paths.get(file).getFileName().toString()).toString(),
                 true);
@@ -124,7 +124,7 @@ public class ChangeList {
             return ret;
         }
 
-        String backupFolder = Paths.get(CodeLineManager.getCurrentCodeLine().getRepoPath(), Utils.Backup_File).toString();
+        String backupFolder = Paths.get(CodeLineManager.getCurrentCodeLine().getRepoPath(), Utils.BackupFilesFolder).toString();
         String oriBackFile = Paths.get(backupFolder,
                 String.valueOf(oriCL.getCLNo()) + "_" + Paths.get(filePath).getFileName().toString()).toString();
         String newBackFile = Paths.get(backupFolder,
@@ -149,7 +149,7 @@ public class ChangeList {
             } else {
                 File temp = new File(file);
                 String fileName = temp.getName();
-                String backupFolder = Paths.get(CodeLineManager.getCurrentCodeLine().getRepoPath(), Utils.Backup_File).toString();
+                String backupFolder = Paths.get(CodeLineManager.getCurrentCodeLine().getRepoPath(), Utils.BackupFilesFolder).toString();
                 oriFilePath = Paths.get(backupFolder, String.valueOf(m_clBean.clNo) + "_" + fileName).toString();
             }
             if(Utils.copyFile(oriFilePath, file, true)){
@@ -158,6 +158,40 @@ public class ChangeList {
                     backupFile.delete();
                 //}
             }
+        }
+
+        return ret;
+    }
+
+    public static boolean createDefaultCL(CodeLineBean lineCfg){
+        boolean ret = true;
+
+        String clPath = Paths.get(lineCfg.repoPath, Utils.ChangeListsFolder, String.valueOf(ChangeList.Default_CL_No)).toString();
+        try{
+            File file = new File(clPath);
+            if (!file.exists()){
+                // create changelist(%d) folder
+                file.mkdir();
+
+                // create changelist.json file
+                String clFilePath = Paths.get(clPath, Utils.ChangeListBeanFileName).toString();
+                File temp = new File(clFilePath);
+                temp.createNewFile();
+                String txt = String.format(Utils.CL_Template, ChangeList.Default_CL_No,
+                        Calendar.getInstance().getTimeInMillis(), lineCfg.codeLineNo, "default");
+                Utils.writeFile(clFilePath, txt);
+
+                // create backupFile folder
+                temp = new File(Paths.get(clPath, Utils.BackupFilesFolder).toString());
+                temp.mkdir();
+
+                // create revisions folder
+                temp = new File(Paths.get(clPath, Utils.RevisionsFolder).toString());
+                temp.mkdir();
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+            ret = false;
         }
 
         return ret;

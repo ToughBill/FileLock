@@ -1,11 +1,7 @@
 package fileLock.config;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.project.ProjectManager;
 import fileLock.bo.ChangeList;
-import fileLock.bo.CodeLine;
 import fileLock.bo.CompAppBean;
 import fileLock.bo.Configuration;
 
@@ -24,21 +20,23 @@ public class Utils {
     public static final String ConfigFileName = "config.json";
     public static final String CodeLineEntriesFileName = "codelines.json";
     public static final String CodeLineBeanFileName = "codeline.json";
+    public static final String ChangeListBeanFileName = "changelist.json";
     public static final String JSON_Suffix = ".json";
-    public static final String Backup_File = "backup_file";
+    public static final String BackupFilesFolder = "backupfiles";
+    public static final String RevisionsFolder = "revisions";
     public static final String ChangeListsFolder = "changelists";
     public static final String ConfigureFileTemplate = "{\"compApp\":[]}";
     public static final String CodeLineEntryFileTemplate = "{\"codeLineEntries\":[], \"nextCodeLineNo\":1}";
-    public static final String CodeLineFileTemplate = "{\"id\":%d,\"createDate\":%ld,\"desc\":%s}";
-    public static final String CL_Template = "{\"clNo\":%d,\"createDate\":%ld,\"codeLine\":%d,\"files\":[],\"desc\":\"%s\"}";
+    public static final String CodeLineFileTemplate = "{\"id\":%d,\"createDate\":%d,\"desc\":\"%s\"}";
+    public static final String CL_Template = "{\"clNo\":%d,\"createDate\":%d,\"codeLine\":%d,\"files\":[],\"desc\":\"%s\"}";
 
     public static String getDataFolderPath(){
         String userFolder = System.getProperty("user.home");
         String path = Paths.get(userFolder, DataFolderName).toString();
-        File folder = new File(path);
-        if (!folder.isDirectory()){
-            folder.mkdir();
-        }
+//        File folder = new File(path);
+//        if (!folder.isDirectory()){
+//            folder.mkdir();
+//        }
 
         return path;
     }
@@ -189,7 +187,7 @@ public class Utils {
             if (cl == null)
                 return;
             String targetFileName = String.valueOf(cl.getCLNo()) + "_" + fileName;
-            baseFilePath = Paths.get(CodeLineManager.getCurrentCodeLine().getRepoPath(), Utils.Backup_File, targetFileName).toString();
+            baseFilePath = Paths.get(CodeLineManager.getCurrentCodeLine().getRepoPath(), Utils.BackupFilesFolder, targetFileName).toString();
         //}
 
         CompAppBean appPath = Configuration.getInstance().getDefaultCompApp();
