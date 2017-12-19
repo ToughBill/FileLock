@@ -2,10 +2,17 @@ package fileLock.config;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import fileLock.bo.ChangeList;
+import fileLock.bo.CodeLine;
+import fileLock.bo.CodeLineBean;
+import io.grpc.Status;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class CodeLineManager {
     private CodeLineConfigurationBean m_configBean;
@@ -78,9 +85,8 @@ public class CodeLineManager {
         return m_manager;
     }
 
-    public static List<CodeLineEntry> getAllCodeLineEntries(){
-        return getCodeLineManager().m_configBean.codeLineEntries;
-    }
+
+
     public static CodeLineEntry getCodeLineEntry(String projPath){
         return getCodeLineManager()._getCodeLineEntry(projPath);
     }
@@ -89,6 +95,142 @@ public class CodeLineManager {
     }
     public static boolean addCodeLineEntry(String projPath, int codeLineNo){
         return getCodeLineManager()._addCodeLineEntry(projPath, codeLineNo);
+    }
+
+    private static Map<String,CodeLine> m_lstCodeLines;
+    public static CodeLine getCurrentCodeLine(){
+        CodeLine ret = null;
+        if(m_lstCodeLines == null){
+            m_lstCodeLines = new HashMap<>();
+        }
+        String projectPath = CurrentAction.getProjectPath();
+        if(m_lstCodeLines.keySet().contains(projectPath)){
+            ret = m_lstCodeLines.get(projectPath);
+        } else {
+//            CodeLineBean codeLineBean = Configuration.getInstance().getCodeLineBean(projectPath);
+//
+//            if (codeLineBean == null){
+//                ret = createCodeLine(projectPath);
+//            } else {
+//                ret = new CodeLine(codeLineBean);
+//            }
+
+            CodeLineEntry entry = CodeLineManager.getCodeLineEntry(projectPath);
+            if(entry == null){
+                ret = createCodeLine(projectPath);
+            } else {
+                ret = new CodeLine(entry.codelineNo);
+            }
+        }
+
+        return ret;
+    }
+    public static CodeLine createCodeLine(String projectPath){
+        CodeLineBean clbean = null;
+        try {
+            // init changelists folder
+            int newCodeLineNo = CodeLineManager.getNextCodeLineNo();
+            String codeLinePath = Paths.get(Utils.getDataFolderPath(), String.valueOf(newCodeLineNo)).toString();
+            File dir = new File(codeLinePath);
+            dir.mkdir();
+            File dir2 = new File(Paths.get(codeLinePath, Utils.ChangeListsFolder).toString());
+            dir2.mkdir();
+
+            // init codeline.json
+            String configFilePath = Paths.get(codeLinePath, Utils.CodeLineBeanFileName).toString();
+            File codelineCongifFile = new File(configFilePath);
+            codelineCongifFile.createNewFile();
+            long curTimestamp = Calendar.getInstance().getTimeInMillis();
+            String strTemplate = String.format(Utils.CodeLineFileTemplate, newCodeLineNo, curTimestamp, "default");
+            Utils.writeFile(configFilePath, strTemplate);
+
+            // add new codeline entry to codelines.json and update nextCodeLineNo
+            clbean = new CodeLineBean();
+            clbean.codeLineNo = newCodeLineNo;
+            clbean.proPath = projectPath;
+            clbean.createDate = curTimestamp;
+            clbean.repoPath = codeLinePath;
+            String mapFile = projectPath + "\\" + FileMapping.FL_FileMappingPath;
+            File temp = new File(mapFile);
+            clbean.isUnderSvn = temp.exists();
+            CodeLineManager.addCodeLineEntry(projectPath, newCodeLineNo);
+
+            // create default changelist
+            createDefaultCL(clbean);
+            setProjectFilesToReadonly(projectPath);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+        CodeLine codeLine = new CodeLine(clbean);
+        m_lstCodeLines.put(projectPath, codeLine);
+
+        return codeLine;
+    }
+    public static boolean createDefaultCL(CodeLineBean lineCfg){
+        boolean ret = true;
+
+        String clFilePath = Paths.get(lineCfg.repoPath, Utils.ChangeListsFolder, ChangeList.Default_CL_No + Utils.JSON_Suffix).toString();
+        try{
+            File file = new File(clFilePath);
+            if (!file.exists()){
+                file.createNewFile();
+
+                String txt = String.format(Utils.CL_Template, ChangeList.Default_CL_No,
+                        Calendar.getInstance().getTimeInMillis(), lineCfg.codeLineNo, "Default");
+                Utils.writeFile(clFilePath, txt);
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+            ret = false;
+        }
+
+        return ret;
+    }
+    private static void setProjectFilesToReadonly(String projectPath){
+        try{
+            Process p = Runtime.getRuntime().exec("cmd /C cd \"" + projectPath + "\" && attrib +R * /S /D");
+        }
+        catch (IOException ex){
+            ex.printStackTrace();
+        }
+    }
+    private static String getFolderCreatTime(String folderPath){
+        String result = null;
+        try {
+            String folderName = Paths.get(folderPath).getFileName().toString();
+            Process p = Runtime.getRuntime().exec("cmd /C dir \"" + Paths.get(folderPath).getParent().toString() + "\" /tc");
+            System.out.print("cmd /C dir \"" + folderPath + "\" /tc");
+            System.out.println();
+            InputStream is = p.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String getTime = null, temp;
+            while ((temp = br.readLine()) != null) {
+                String[] str = temp.split(" ");
+                for (int i = str.length - 1; i >= 0; i--) {
+                    if (str[i].equals(folderName)) {
+                        getTime = str[0] + " " + str[2];
+                    }
+                }
+            }
+            result = getTime;
+        } catch (java.io.IOException exc) {
+            exc.printStackTrace();
+        }
+
+        return result;
+    }
+
+    private static String getFileCreateTime(String filePath){
+        String result = null;
+        try{
+            BasicFileAttributes attr = Files.readAttributes(Paths.get(filePath), BasicFileAttributes.class);
+            result = attr.creationTime().toString();
+        }catch (IOException e){
+
+        }
+
+        return result;
     }
 }
 

@@ -5,7 +5,7 @@ package fileLock.bo;
  */
 public class CodeLineBean {
     public int codeLineNo;
-    public String createDate;
+    public long createDate;
     public String proPath;
     public String repoPath;
     public boolean isUnderSvn;

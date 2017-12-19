@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.project.Project;
 import fileLock.bo.CodeLine;
 import fileLock.bo.CodeLineBean;
+import fileLock.config.CodeLineManager;
 import fileLock.config.CurrentAction;
 
 public class NewCodeLine extends AnAction {
@@ -18,6 +19,6 @@ public class NewCodeLine extends AnAction {
         CurrentAction.setActionEvent(event);
         Project project = event.getData(CommonDataKeys.PROJECT);
         String projPath = project.getBasePath();
-        CodeLine.createCodeLine(projPath);
+        CodeLineManager.createCodeLine(projPath);
     }
 }

@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.vfs.VirtualFile;
 import fileLock.bo.ChangeList;
 import fileLock.bo.CodeLine;
+import fileLock.config.CodeLineManager;
 import fileLock.config.CurrentAction;
 import fileLock.config.Utils;
 
@@ -40,6 +41,6 @@ public class MergeChangesToSVNSource extends AnAction {
             return;
         }
         CurrentAction.setActionEvent(event);
-        event.getPresentation().setEnabled(CodeLine.getCurrentCodeLine().getIsUnderSvn());
+        event.getPresentation().setEnabled(CodeLineManager.getCurrentCodeLine().getIsUnderSvn());
     }
 }

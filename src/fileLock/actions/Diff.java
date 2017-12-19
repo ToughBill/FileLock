@@ -37,11 +37,11 @@ public class Diff extends AnAction {
         Utils.DiffFile(path);
 //        String fileName = Paths.get(path).getFileName().toString();
 //        String targetFilePath;
-//        if(CodeLine.getCurrentCodeLine().getIsUnderSvn()){
+//        if(CodeLineManager.getCurrentCodeLine().getIsUnderSvn()){
 //            targetFilePath = FileMapping.getInstance().getSourcePath(fileName);
 //        } else{
 //            String targetFileName = String.valueOf(cl.getCLNo()) + "_" + fileName;
-//            targetFilePath = Paths.get(CodeLine.getCurrentCodeLine().getRepoPath(), Utils.Backup_File, targetFileName).toString();
+//            targetFilePath = Paths.get(CodeLineManager.getCurrentCodeLine().getRepoPath(), Utils.Backup_File, targetFileName).toString();
 //        }
 //
 //        CompAppBean appPath = Configuration.getInstance().getDefaultCompApp();

@@ -22,18 +22,12 @@ public class Configuration {
     private static Configuration m_instance;
     public static void initSettings(){
         try{
-            // init config.json file
             String path = Utils.getDataFolderPath();
             String configPath = Paths.get(path, Utils.ConfigFileName).toString();
             if(!Utils.isPathExists(path)){
                 Utils.ensurePathExists(path, true);
                 Utils.ensurePathExists(configPath, false);
                 Utils.writeFile(configPath, Utils.ConfigureFileTemplate);
-
-//                Gson gson = new Gson();
-//                java.lang.reflect.Type type = new TypeToken<ConfigurationBean>() {}.getType();
-//                m_instance = new Configuration();
-//                m_instance.m_cfgBean = gson.fromJson(Utils.ConfigureFileTemplate, type);
 
                 //init codelines folder
                 String clFolderPath = Utils.getCodeLineFolder();
@@ -80,32 +74,32 @@ public class Configuration {
         return m_instance;
     }
 
-    public CodeLineBean getCodeLineBean(String path){
-        CodeLineBean ret = null;
-        Configuration inst = Configuration.getInstance();
-        for(int i = 0; i < inst.m_cfgBean.codeLine.size(); i++){
-            CodeLineBean temp = inst.m_cfgBean.codeLine.get(i);
-            if (temp.proPath.equals(path)){
-                ret = temp;
-                break;
-            }
-        }
-
-        return ret;
-    }
-    public CodeLineBean getCodeLineBean(String path, String time){
-        CodeLineBean ret = null;
-        Configuration inst = Configuration.getInstance();
-        for(int i = 0; i < inst.m_cfgBean.codeLine.size(); i++){
-            CodeLineBean temp = inst.m_cfgBean.codeLine.get(i);
-            if (temp.proPath.equals(path) && temp.createDate.equals(time) ){
-                ret = temp;
-                break;
-            }
-        }
-
-        return ret;
-    }
+//    public CodeLineBean getCodeLineBean(String path){
+//        CodeLineBean ret = null;
+//        Configuration inst = Configuration.getInstance();
+//        for(int i = 0; i < inst.m_cfgBean.codeLine.size(); i++){
+//            CodeLineBean temp = inst.m_cfgBean.codeLine.get(i);
+//            if (temp.proPath.equals(path)){
+//                ret = temp;
+//                break;
+//            }
+//        }
+//
+//        return ret;
+//    }
+//    public CodeLineBean getCodeLineBean(String path, String time){
+//        CodeLineBean ret = null;
+//        Configuration inst = Configuration.getInstance();
+//        for(int i = 0; i < inst.m_cfgBean.codeLine.size(); i++){
+//            CodeLineBean temp = inst.m_cfgBean.codeLine.get(i);
+//            if (temp.proPath.equals(path) && temp.createDate.equals(time) ){
+//                ret = temp;
+//                break;
+//            }
+//        }
+//
+//        return ret;
+//    }
 
     public static void EnsureConfigurationFileExists(String filePath){
         File file = new File(filePath);
@@ -126,46 +120,46 @@ public class Configuration {
 
     }
 
-    public boolean addCodeLine(CodeLineBean line){
-        boolean ret;
-        Configuration inst = Configuration.getInstance();
-        inst.m_cfgBean.codeLine.add(line);
-        ret = save();
-        return  ret;
-    }
+//    public boolean addCodeLine(CodeLineBean line){
+//        boolean ret;
+//        Configuration inst = Configuration.getInstance();
+//        inst.m_cfgBean.codeLine.add(line);
+//        ret = save();
+//        return  ret;
+//    }
 
-    public CodeLineBean createNewCodeLine(String path, String time){
-        CodeLineBean ret = null;
-        int maxNo = 0;
-        Configuration inst = Configuration.getInstance();
-        Iterator<CodeLineBean> iter = inst.m_cfgBean.codeLine.iterator();
-        while (iter.hasNext()){
-            CodeLineBean config = iter.next();
-            if(config.codeLineNo > maxNo)
-                maxNo = config.codeLineNo;
-        }
-        int newCodeLineNo = maxNo + 1;
-        String codeLinePath = Paths.get(Utils.getDataFolderPath(), String.valueOf(newCodeLineNo)).toString();
-        File dir = new File(codeLinePath);
-        dir.mkdir();
-        File dir2 = new File(Paths.get(codeLinePath, Utils.Backup_File).toString());
-        dir2.mkdir();
-
-        ret = new CodeLineBean();
-        ret.codeLineNo = newCodeLineNo;
-        ret.proPath = path;
-        ret.createDate = time;
-        ret.repoPath = codeLinePath;
-        String mapFile = path + "\\" + FileMapping.FL_FileMappingPath;
-        File temp = new File(mapFile);
-        ret.isUnderSvn = temp.exists();
-        inst.m_cfgBean.codeLine.add(ret);
-
-        createDefaultCL(ret);
-
-        save();
-        return ret;
-    }
+//    public CodeLineBean createNewCodeLine(String path, String time){
+//        CodeLineBean ret = null;
+//        int maxNo = 0;
+//        Configuration inst = Configuration.getInstance();
+//        Iterator<CodeLineBean> iter = inst.m_cfgBean.codeLine.iterator();
+//        while (iter.hasNext()){
+//            CodeLineBean config = iter.next();
+//            if(config.codeLineNo > maxNo)
+//                maxNo = config.codeLineNo;
+//        }
+//        int newCodeLineNo = maxNo + 1;
+//        String codeLinePath = Paths.get(Utils.getDataFolderPath(), String.valueOf(newCodeLineNo)).toString();
+//        File dir = new File(codeLinePath);
+//        dir.mkdir();
+//        File dir2 = new File(Paths.get(codeLinePath, Utils.Backup_File).toString());
+//        dir2.mkdir();
+//
+//        ret = new CodeLineBean();
+//        ret.codeLineNo = newCodeLineNo;
+//        ret.proPath = path;
+//        ret.createDate = time;
+//        ret.repoPath = codeLinePath;
+//        String mapFile = path + "\\" + FileMapping.FL_FileMappingPath;
+//        File temp = new File(mapFile);
+//        ret.isUnderSvn = temp.exists();
+//        inst.m_cfgBean.codeLine.add(ret);
+//
+//        createDefaultCL(ret);
+//
+//        save();
+//        return ret;
+//    }
 
     public boolean createDefaultCL(CodeLineBean lineCfg){
         boolean ret = true;

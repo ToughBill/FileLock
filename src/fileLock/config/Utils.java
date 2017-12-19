@@ -11,6 +11,8 @@ import fileLock.bo.Configuration;
 
 import java.io.*;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by lbin on 7/29/2016.
@@ -24,9 +26,11 @@ public class Utils {
     public static final String CodeLineBeanFileName = "codeline.json";
     public static final String JSON_Suffix = ".json";
     public static final String Backup_File = "backup_file";
+    public static final String ChangeListsFolder = "changelists";
     public static final String ConfigureFileTemplate = "{\"compApp\":[]}";
     public static final String CodeLineEntryFileTemplate = "{\"codeLineEntries\":[], \"nextCodeLineNo\":1}";
-    public static final String CL_Template = "{\"clNo\":%d,\"createDate\":%dcodeLine,\"\":%d,\"files\":[],\"desc\":\"%s\"}";
+    public static final String CodeLineFileTemplate = "{\"id\":%d,\"createDate\":%ld,\"desc\":%s}";
+    public static final String CL_Template = "{\"clNo\":%d,\"createDate\":%ld,\"codeLine\":%d,\"files\":[],\"desc\":\"%s\"}";
 
     public static String getDataFolderPath(){
         String userFolder = System.getProperty("user.home");
@@ -178,14 +182,14 @@ public class Utils {
     public static void DiffFile(String path){
         String fileName = Paths.get(path).getFileName().toString();
         String baseFilePath;
-//        if(CodeLine.getCurrentCodeLine().getIsUnderSvn()){
-//            baseFilePath = CodeLine.getCurrentCodeLine().getFileMap().getSourcePath(path);
+//        if(CodeLineManager.getCurrentCodeLine().getIsUnderSvn()){
+//            baseFilePath = CodeLineManager.getCurrentCodeLine().getFileMap().getSourcePath(path);
 //        } else{
             ChangeList cl = ChangeList.findChangeList(path);
             if (cl == null)
                 return;
             String targetFileName = String.valueOf(cl.getCLNo()) + "_" + fileName;
-            baseFilePath = Paths.get(CodeLine.getCurrentCodeLine().getRepoPath(), Utils.Backup_File, targetFileName).toString();
+            baseFilePath = Paths.get(CodeLineManager.getCurrentCodeLine().getRepoPath(), Utils.Backup_File, targetFileName).toString();
         //}
 
         CompAppBean appPath = Configuration.getInstance().getDefaultCompApp();
@@ -193,11 +197,11 @@ public class Utils {
     }
 
     public static void MergeChangesToSvnSource(String path){
-        if(!CodeLine.getCurrentCodeLine().getIsUnderSvn()){
+        if(!CodeLineManager.getCurrentCodeLine().getIsUnderSvn()){
             return;
         }
 
-        String baseFilePath = CodeLine.getCurrentCodeLine().getFileMap().getSourcePath(path);
+        String baseFilePath = CodeLineManager.getCurrentCodeLine().getFileMap().getSourcePath(path);
         CompAppBean appPath = Configuration.getInstance().getDefaultCompApp();
         startCompare(appPath.path, baseFilePath, path);
     }
@@ -220,6 +224,12 @@ public class Utils {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public static String getCurrentTimeString(){
+        Date dt = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(dt);
     }
 
     public static String getExtensionPath(){

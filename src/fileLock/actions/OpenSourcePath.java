@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.vfs.VirtualFile;
 import fileLock.bo.CodeLine;
+import fileLock.config.CodeLineManager;
 import fileLock.config.CurrentAction;
 import fileLock.config.FileMapping;
 import fileLock.config.Utils;
@@ -25,7 +26,7 @@ public class OpenSourcePath extends AnAction {
         }
         CurrentAction.setActionEvent(event);
         String path = virFile.getPath();
-        String sourcePath = CodeLine.getCurrentCodeLine().getFileMap().getSourcePath(path);
+        String sourcePath = CodeLineManager.getCurrentCodeLine().getFileMap().getSourcePath(path);
         if (sourcePath != null){
             Utils.ShowInExplorer(sourcePath);
         }

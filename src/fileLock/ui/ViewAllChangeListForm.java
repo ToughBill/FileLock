@@ -11,6 +11,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diff.impl.incrementalMerge.Change;
 import fileLock.bo.ChangeList;
 import fileLock.bo.CodeLine;
+import fileLock.config.CodeLineManager;
 import fileLock.config.CurrentAction;
 import fileLock.config.FileMapping;
 import fileLock.config.Utils;
@@ -64,7 +65,7 @@ public class ViewAllChangeListForm extends JFrame {
             txtFiles.setText(temp);
             Date dt = new Date(cl.getTime());
             txtTime.setText(dt.toString());
-            txtProPath.setText(CodeLine.getCurrentCodeLine().getProjectPath());
+            txtProPath.setText(CodeLineManager.getCurrentCodeLine().getProjectPath());
         }
         else {
             txtFiles.setText("");
@@ -309,7 +310,7 @@ public class ViewAllChangeListForm extends JFrame {
 
         m_model = new DefaultTreeModel(m_rootNode);
         clTree.setModel(m_model);
-        CodeLine codeLine = CodeLine.getCurrentCodeLine();
+        CodeLine codeLine = CodeLineManager.getCurrentCodeLine();
 
 
         int stIndex = 0;
@@ -369,7 +370,7 @@ class TreePopup extends JPopupMenu {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode)m_tree.getLastSelectedPathComponent();
                 if(node.getLevel() == 3){
                     String fileName = node.toString();
-                    String baseFile = CodeLine.getCurrentCodeLine().getFileMap().getSourcePath(fileName);
+                    String baseFile = CodeLineManager.getCurrentCodeLine().getFileMap().getSourcePath(fileName);
                     if(baseFile != null){
                         Utils.ShowInExplorer(baseFile);
                     }
@@ -402,7 +403,7 @@ class TreePopup extends JPopupMenu {
                 }
             }
         });
-        List<ChangeList> clList = CodeLine.getCurrentCodeLine().getAllChangeList();
+        List<ChangeList> clList = CodeLineManager.getCurrentCodeLine().getAllChangeList();
         for (ChangeList cl : clList){
             JMenuItem clMenu = new JMenuItem(cl.getCLDesc());
             clMenu.addActionListener(new ActionListener() {

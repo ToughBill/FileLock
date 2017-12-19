@@ -6,6 +6,7 @@ import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.vfs.VirtualFile;
 import fileLock.bo.ChangeList;
 import fileLock.bo.CodeLine;
+import fileLock.config.CodeLineManager;
 import fileLock.config.FileMapping;
 import fileLock.config.Utils;
 
@@ -77,7 +78,7 @@ public class CheckOutToForm extends JFrame {
     private void btnOkActionPerformed(ActionEvent e) {
         String path = m_selectedFile.getPath();
         Object obj = cmbCLs.getSelectedItem();
-//        if(CodeLine.getCurrentCodeLine().getIsUnderSvn()) {
+//        if(CodeLineManager.getCurrentCodeLine().getIsUnderSvn()) {
 //
 //            File file = new File(path);
 //            if (!file.canWrite()) {
@@ -105,7 +106,7 @@ public class CheckOutToForm extends JFrame {
             newCL.initNew();
             newCL.setCLDesc(txtDesc.getText());
             newCL.setDate(Calendar.getInstance().getTimeInMillis());
-            newCL.setCodeLine(CodeLine.getCurrentCodeLine().getCodeLineNo());
+            newCL.setCodeLine(CodeLineManager.getCurrentCodeLine().getCodeLineNo());
             newCL.checkoutFile(path);
             checkout = newCL.save();
         }
@@ -276,7 +277,7 @@ public class CheckOutToForm extends JFrame {
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 
     private void initData(){
-//        if(CodeLine.getCurrentCodeLine().getIsUnderSvn()){
+//        if(CodeLineManager.getCurrentCodeLine().getIsUnderSvn()){
 //            initDataFromSvn();
 //        } else {
             initDataFromLocal();
@@ -284,7 +285,7 @@ public class CheckOutToForm extends JFrame {
     }
 
     private void initDataFromLocal(){
-        CodeLine codeLine = CodeLine.getCurrentCodeLine();
+        CodeLine codeLine = CodeLineManager.getCurrentCodeLine();
         List<ChangeList> cls = codeLine.getAllChangeList();
         for(ChangeList cl : cls){
             cmbCLs.addItem(cl);
@@ -294,7 +295,7 @@ public class CheckOutToForm extends JFrame {
     }
 
     private void initDataFromSvn(){
-        String cmd = "cmd.exe /c D: && cd \"" + CodeLine.getCurrentCodeLine().getFileMap().getSVNTrunkPath() + "\" && svn st | find /V \"?\"";
+        String cmd = "cmd.exe /c D: && cd \"" + CodeLineManager.getCurrentCodeLine().getFileMap().getSVNTrunkPath() + "\" && svn st | find /V \"?\"";
         String clsStr = Utils.exeCmd(cmd);
         System.out.print("clsStr:" + clsStr);
         String[] lines = clsStr.split("\n");
