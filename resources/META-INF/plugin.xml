@@ -72,6 +72,7 @@
     <group id="MyPlugin.FileLock" text="File Lock" description="File Lock">
       <add-to-group group-id="MainMenu" relative-to-action ="HelpMenu" anchor="before"  />
       <action class="fileLock.actions.Settings" id="ac_main_settings" text="Settings" description="Settings"></action>
+      <action class="fileLock.actions.NewCodeLine" id="ac_main_newCodeLine" text="New Code Line" description="New Code Line"></action>
       <action class="fileLock.actions.CheckOut" id="ac_main_checkOut" text="Checkout" description="Check File Out"></action>
       <action class="fileLock.actions.CheckOutTo" id="ac_main_checkOutTo" text="Checkout to..." description="Check File Out to specific changelist"></action>
       <action class="fileLock.actions.Diff" id="ac_main_diff" text="Diff" description="Diff"></action>
