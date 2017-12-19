@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import fileLock.bo.ChangeList;
 import fileLock.bo.CodeLine;
 import fileLock.bo.CodeLineBean;
-import io.grpc.Status;
+//import io.grpc.Status;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -127,21 +127,13 @@ public class CodeLineManager {
         try {
             // create changelists folder
             int newCodeLineNo = CodeLineManager.getNextCodeLineNo();
-            String codeLinePath = Paths.get(Utils.getCodeLineFolder(), String.valueOf(newCodeLineNo)).toString();
+            String codeLinePath = Utils.encodePath(Paths.get(Utils.getCodeLineFolder(), String.valueOf(newCodeLineNo)).toString());
             File dir = new File(codeLinePath);
             dir.mkdir();
             File dir2 = new File(Paths.get(codeLinePath, Utils.ChangeListsFolder).toString());
             dir2.mkdir();
 
-            // init codeline.json
-            String configFilePath = Paths.get(codeLinePath, Utils.CodeLineBeanFileName).toString();
-            File codelineCongifFile = new File(configFilePath);
-            codelineCongifFile.createNewFile();
             long curTimestamp = Calendar.getInstance().getTimeInMillis();
-            String strTemplate = String.format(Utils.CodeLineFileTemplate, newCodeLineNo, curTimestamp, "default");
-            Utils.writeFile(configFilePath, strTemplate);
-
-            // add new codeline entry to codelines.json and update nextCodeLineNo
             clbean = new CodeLineBean();
             clbean.codeLineNo = newCodeLineNo;
             clbean.proPath = projectPath;
@@ -150,6 +142,15 @@ public class CodeLineManager {
             String mapFile = projectPath + "\\" + FileMapping.FL_FileMappingPath;
             File temp = new File(mapFile);
             clbean.isUnderSvn = temp.exists();
+
+            // init codeline.json
+            String configFilePath = Paths.get(codeLinePath, Utils.CodeLineBeanFileName).toString();
+            File codelineCongifFile = new File(configFilePath);
+            codelineCongifFile.createNewFile();
+            String strTemplate = String.format(Utils.CodeLineFileTemplate, newCodeLineNo, curTimestamp, projectPath, codeLinePath, false, "default");
+            Utils.writeFile(configFilePath, strTemplate);
+
+            // add new codeline entry to codelines.json and update nextCodeLineNo
             CodeLineManager.addCodeLineEntry(projectPath, newCodeLineNo);
 
             // create default changelist

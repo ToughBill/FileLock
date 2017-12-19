@@ -9,4 +9,5 @@ public class CodeLineBean {
     public String proPath;
     public String repoPath;
     public boolean isUnderSvn;
+    public String desc;
 }
