@@ -16,16 +16,21 @@ import java.util.List;
  */
 public class ChangeList {
     private ChangeListBean m_clBean;
-
     public static final int Default_CL_No = -10;
 
+    enum BOFlow{
+        Query, Add, Update, Delete
+    }
+    private BOFlow m_flow;
+
     public ChangeList(){
+        m_flow = BOFlow.Query;
     }
 
     public boolean initNew(){
         m_clBean = new ChangeListBean();
-        m_clBean.clNo = Configuration.getInstance().getNextCLNo();
-
+        m_clBean.clNo = CodeLineManager.getCurrentCodeLine().getNextChangeListNo();
+        m_flow = BOFlow.Add;
         return true;
     }
 
@@ -58,7 +63,9 @@ public class ChangeList {
         String clFilePath = getCLPath();
         String str = Utils.objectToString(m_clBean);
         ret = Utils.writeFile(clFilePath, str);
-
+        if(ret && m_flow == BOFlow.Add){
+            ret = CodeLineManager.getCurrentCodeLine().updateNextChangeListNo();
+        }
         return ret;
     }
 
@@ -149,7 +156,7 @@ public class ChangeList {
             } else {
                 File temp = new File(file);
                 String fileName = temp.getName();
-                String backupFolder = Paths.get(CodeLineManager.getCurrentCodeLine().getRepoPath(), Utils.BackupFilesFolder).toString();
+                String backupFolder = Paths.get(CodeLineManager.getCurrentCodeLine().getRepoPath(), Utils.ChangeListsFolder, String.valueOf(m_clBean.clNo), Utils.BackupFilesFolder).toString();
                 oriFilePath = Paths.get(backupFolder, String.valueOf(m_clBean.clNo) + "_" + fileName).toString();
             }
             if(Utils.copyFile(oriFilePath, file, true)){
@@ -177,7 +184,7 @@ public class ChangeList {
                 String clFilePath = Paths.get(clPath, Utils.ChangeListBeanFileName).toString();
                 File temp = new File(clFilePath);
                 temp.createNewFile();
-                String txt = String.format(Utils.CL_Template, ChangeList.Default_CL_No,
+                String txt = String.format(Utils.ChangeListFileTemplate, ChangeList.Default_CL_No,
                         Calendar.getInstance().getTimeInMillis(), lineCfg.codeLineNo, "default");
                 Utils.writeFile(clFilePath, txt);
 

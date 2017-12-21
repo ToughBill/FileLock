@@ -12,7 +12,6 @@ public class ChangeListBean {
     public int codeLine;
     public List<String> files;
     public String desc;
-    public int shelvedCL;
 
     public ChangeListBean(){
         desc = "";

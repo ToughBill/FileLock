@@ -2,14 +2,11 @@ package fileLock.bo;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import fileLock.config.FileMapping;
 import fileLock.config.Utils;
 
-import javax.rmi.CORBA.Util;
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.Calendar;
-import java.util.Iterator;
 
 /**
  * Created by lbin on 8/2/2016.
@@ -170,7 +167,7 @@ public class Configuration {
             if (!file.exists()){
                 file.createNewFile();
 
-                String txt = String.format(Utils.CL_Template, ChangeList.Default_CL_No,
+                String txt = String.format(Utils.ChangeListFileTemplate, ChangeList.Default_CL_No,
                         Calendar.getInstance().getTimeInMillis(), lineCfg.codeLineNo, "Default", 0);
                 Utils.writeFile(clFilePath, txt);
             }

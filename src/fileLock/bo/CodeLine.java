@@ -74,13 +74,13 @@ public class CodeLine {
 
         String repoPath = getRepoPath();
         try{
-            File dir = new File(repoPath);
-            FileTypeFilter filter = new FileTypeFilter(Utils.JSON_Suffix);
+            File dir = new File(Paths.get(repoPath, Utils.ChangeListsFolder).toString());
+            FolderFilter filter = new FolderFilter();
             String[] files = dir.list(filter);
             ret = new ArrayList<>();
             for (String str : files) {
                 ChangeList cl = new ChangeList();
-                cl.getByKey(Integer.valueOf(getFileNameWithoutExtension(str)));
+                cl.getByKey(Integer.valueOf(str));
                 ret.add(cl);
             }
 
@@ -90,6 +90,29 @@ public class CodeLine {
         }
 
         return ret;
+    }
+
+    public int getNextChangeListNo(){
+        return m_codeLineBean.nextCLNo;
+    }
+
+    public boolean updateNextChangeListNo(){
+        m_codeLineBean.nextCLNo++;
+        return save();
+    }
+
+    public boolean save(){
+        boolean ret = true;
+
+        String codeLineFilePath = getCodeLineFilePath();
+        String str = Utils.objectToString(m_codeLineBean);
+        ret = Utils.writeFile(codeLineFilePath, str);
+
+        return ret;
+    }
+
+    private String getCodeLineFilePath(){
+        return Paths.get(Utils.getCodeLineFolder(), String.valueOf(m_codeLineBean.codeLineNo), Utils.CodeLineBeanFileName).toString();
     }
 
     private String getFileNameWithoutExtension(String fileName){
@@ -108,5 +131,12 @@ class FileTypeFilter implements FilenameFilter{
         File file = new File(path);
         String filename = file.getName();
         return filename.indexOf(m_type)!=-1;
+    }
+}
+
+class FolderFilter implements FilenameFilter{
+    public boolean accept(File fl, String path) {
+        //File file = new File(path);
+        return fl.isDirectory();
     }
 }

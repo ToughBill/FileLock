@@ -27,8 +27,8 @@ public class Utils {
     public static final String ChangeListsFolder = "changelists";
     public static final String ConfigureFileTemplate = "{\"compApp\":[]}";
     public static final String CodeLineEntryFileTemplate = "{\"codeLineEntries\":[], \"nextCodeLineNo\":1}";
-    public static final String CodeLineFileTemplate = "{\"codeLineNo\":%d,\"createDate\":%d,\"projPath\":\"%s\",\"repoPath\":\"%s\",\"isUnderSvn\":%b,\"desc\":\"%s\"}";
-    public static final String CL_Template = "{\"clNo\":%d,\"createDate\":%d,\"codeLine\":%d,\"files\":[],\"desc\":\"%s\"}";
+    public static final String CodeLineFileTemplate = "{\"codeLineNo\":%d,\"createDate\":%d,\"projPath\":\"%s\",\"repoPath\":\"%s\",\"nextCLNo\":%d,\"isUnderSvn\":%b,\"desc\":\"%s\"}";
+    public static final String ChangeListFileTemplate = "{\"clNo\":%d,\"createDate\":%d,\"codeLine\":%d,\"files\":[],\"desc\":\"%s\"}";
 
     public static String getDataFolderPath(){
         String userFolder = System.getProperty("user.home");

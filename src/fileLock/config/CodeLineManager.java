@@ -147,7 +147,7 @@ public class CodeLineManager {
             String configFilePath = Paths.get(codeLinePath, Utils.CodeLineBeanFileName).toString();
             File codelineCongifFile = new File(configFilePath);
             codelineCongifFile.createNewFile();
-            String strTemplate = String.format(Utils.CodeLineFileTemplate, newCodeLineNo, curTimestamp, projectPath, codeLinePath, false, "default");
+            String strTemplate = String.format(Utils.CodeLineFileTemplate, newCodeLineNo, curTimestamp, projectPath, codeLinePath, 1, false, "default");
             Utils.writeFile(configFilePath, strTemplate);
 
             // add new codeline entry to codelines.json and update nextCodeLineNo
