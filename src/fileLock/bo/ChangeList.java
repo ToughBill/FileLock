@@ -60,7 +60,11 @@ public class ChangeList {
     public boolean save(){
         boolean ret = true;
 
-        String clFilePath = getCLPath();
+        if(ret && m_flow == BOFlow.Add){
+            String clFolder = getCLFolderPath();
+            Utils.ensurePathExists(clFolder, true);
+        }
+        String clFilePath = getCLJsonPathPath();
         String str = Utils.objectToString(m_clBean);
         ret = Utils.writeFile(clFilePath, str);
         if(ret && m_flow == BOFlow.Add){
@@ -69,12 +73,18 @@ public class ChangeList {
         return ret;
     }
 
-    public String getCLPath(){
-        return getCLPath(m_clBean.clNo);
+    public String getCLFolderPath(){
+        return getCLFolderPath(m_clBean.clNo);
     }
-    public String getCLPath(int clNo){
+    public String getCLFolderPath(int clNo){
         CodeLine codeLine = CodeLineManager.getCurrentCodeLine();
-        return Paths.get(codeLine.getRepoPath(), Utils.ChangeListsFolder, String.valueOf(clNo), Utils.ChangeListBeanFileName).toString();
+        return Paths.get(codeLine.getRepoPath(), Utils.ChangeListsFolder, String.valueOf(clNo)).toString();
+    }
+    public String getCLJsonPathPath(){
+        return getCLJsonPathPath(m_clBean.clNo);
+    }
+    public String getCLJsonPathPath(int clNo){
+        return Paths.get(getCLFolderPath(clNo), Utils.ChangeListBeanFileName).toString();
     }
     public long getTime(){
         return m_clBean.createDate;
@@ -82,7 +92,7 @@ public class ChangeList {
 
     public boolean getByKey(int clNo){
         boolean ret = true;
-        String path = getCLPath(clNo);
+        String path = getCLJsonPathPath(clNo);
         try{
             String str = Utils.readFile(path);
             Gson gson = new Gson();

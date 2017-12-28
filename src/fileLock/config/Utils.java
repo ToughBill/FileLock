@@ -186,8 +186,9 @@ public class Utils {
             ChangeList cl = ChangeList.findChangeList(path);
             if (cl == null)
                 return;
-            String targetFileName = String.valueOf(cl.getCLNo()) + "_" + fileName;
-            baseFilePath = Paths.get(CodeLineManager.getCurrentCodeLine().getRepoPath(), Utils.BackupFilesFolder, targetFileName).toString();
+            String baseFileName = String.valueOf(cl.getCLNo()) + "_" + fileName;
+            String backupFolderPath = Paths.get(CodeLineManager.getCurrentCodeLine().getRepoPath(), Utils.ChangeListsFolder, String.valueOf(cl.getCLNo()), Utils.BackupFilesFolder).toString();
+            baseFilePath = Paths.get(backupFolderPath, baseFileName).toString();
         //}
 
         CompAppBean appPath = Configuration.getInstance().getDefaultCompApp();
