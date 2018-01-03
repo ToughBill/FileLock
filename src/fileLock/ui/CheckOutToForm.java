@@ -129,7 +129,7 @@ public class CheckOutToForm extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-        // Generated using JFormDesigner Evaluation license - Bin Li
+        // Generated using JFormDesigner Evaluation license - bill li
         dialogPane = new JPanel();
         contentPanel = new JPanel();
         label1 = new JLabel();
@@ -261,7 +261,7 @@ public class CheckOutToForm extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-    // Generated using JFormDesigner Evaluation license - Bin Li
+    // Generated using JFormDesigner Evaluation license - bill li
     private JPanel dialogPane;
     private JPanel contentPanel;
     private JLabel label1;

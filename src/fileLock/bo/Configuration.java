@@ -179,6 +179,11 @@ public class Configuration {
         return ret;
     }
 
+    public void setCompareTool(String toolPath, String cmdLine){
+        m_cfgBean.compTool.path = toolPath;
+        m_cfgBean.compTool.cmdLine = cmdLine;
+    }
+
     public boolean save(){
         boolean ret = true;
         Gson gson = new Gson();
@@ -196,22 +201,23 @@ public class Configuration {
         return ret;
     }
 
-    public int getNextCLNo(){
-        int ret =  m_cfgBean.nextCLNo;
-        m_cfgBean.nextCLNo++;
-        save();
-        return ret;
-    }
+//    public int getNextCLNo(){
+//        int ret =  m_cfgBean.nextCLNo;
+//        m_cfgBean.nextCLNo++;
+//        save();
+//        return ret;
+//    }
 
-    public CompAppBean getDefaultCompApp(){
-        CompAppBean ret = null;
-        for (CompAppBean app : m_cfgBean.compApp){
-            if (app.isdft == 1){
-                ret = app;
-                break;
-            }
-        }
-
-        return ret;
+    public CompAppBean getCompareTool(){
+//        CompAppBean ret = null;
+//        for (CompAppBean app : m_cfgBean.compApp){
+//            if (app.isdft == 1){
+//                ret = app;
+//                break;
+//            }
+//        }
+//
+//        return ret;
+        return m_cfgBean.compTool;
     }
 }

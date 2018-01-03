@@ -25,7 +25,7 @@ public class Utils {
     public static final String BackupFilesFolder = "backupfiles";
     public static final String RevisionsFolder = "revisions";
     public static final String ChangeListsFolder = "changelists";
-    public static final String ConfigureFileTemplate = "{\"compApp\":[]}";
+    public static final String ConfigureFileTemplate = "{\"compTool\":{}}";
     public static final String CodeLineEntryFileTemplate = "{\"codeLineEntries\":[], \"nextCodeLineNo\":1}";
     public static final String CodeLineFileTemplate = "{\"codeLineNo\":%d,\"createDate\":%d,\"projPath\":\"%s\",\"repoPath\":\"%s\",\"nextCLNo\":%d,\"isUnderSvn\":%b,\"desc\":\"%s\"}";
     public static final String ChangeListFileTemplate = "{\"clNo\":%d,\"createDate\":%d,\"codeLine\":%d,\"files\":[],\"desc\":\"%s\"}";
@@ -191,8 +191,9 @@ public class Utils {
             baseFilePath = Paths.get(backupFolderPath, baseFileName).toString();
         //}
 
-        CompAppBean appPath = Configuration.getInstance().getDefaultCompApp();
-        startCompare(appPath.path, baseFilePath, path);
+        //CompAppBean appPath = Configuration.getInstance().getDefaultCompApp();
+        //startCompare(Configuration.getInstance().getCompareToolPath(), baseFilePath, path);
+        startCompare(Configuration.getInstance().getCompareTool(), encodePath(baseFilePath), path);
     }
 
     public static void MergeChangesToSvnSource(String path){
@@ -201,14 +202,28 @@ public class Utils {
         }
 
         String baseFilePath = CodeLineManager.getCurrentCodeLine().getFileMap().getSourcePath(path);
-        CompAppBean appPath = Configuration.getInstance().getDefaultCompApp();
-        startCompare(appPath.path, baseFilePath, path);
+        //CompAppBean appPath = Configuration.getInstance().getDefaultCompApp();
+        //startCompare(Configuration.getInstance().getCompareToolPath(), baseFilePath, path);
+        startCompare(Configuration.getInstance().getCompareTool(), baseFilePath, path);
     }
 
     private static void startCompare(String appPath, String file1, String file2){
         try{
             Runtime run = Runtime.getRuntime();
             String args = appPath + " \"" + file1 + "\" \"" + file2 + "\" /lefttitle=\"base\" /righttitle=\"workspace\"";
+            Process p = run.exec(args);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    private static void startCompare(CompAppBean compApp, String file1, String file2){
+        try{
+            Runtime run = Runtime.getRuntime();
+            String cmdLine = compApp.cmdLine;
+            cmdLine = cmdLine.replaceFirst("File1", file1);
+            cmdLine = cmdLine.replaceFirst("File2", file2);
+
+            String args = compApp.path + " " + cmdLine;
             Process p = run.exec(args);
         }catch (Exception e){
             e.printStackTrace();
