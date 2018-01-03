@@ -136,7 +136,7 @@ public class CodeLineManager {
             long curTimestamp = Calendar.getInstance().getTimeInMillis();
             clbean = new CodeLineBean();
             clbean.codeLineNo = newCodeLineNo;
-            clbean.proPath = projectPath;
+            clbean.projPath = projectPath;
             clbean.createDate = curTimestamp;
             clbean.repoPath = codeLinePath;
             String mapFile = projectPath + "\\" + FileMapping.FL_FileMappingPath;

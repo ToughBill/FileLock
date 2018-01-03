@@ -26,7 +26,7 @@ public class CodeLine {
         return m_codeLineBean.repoPath;
     }
     public String getProjectPath(){
-        return  m_codeLineBean.proPath;
+        return  m_codeLineBean.projPath;
     }
     public boolean getIsUnderSvn(){ return m_codeLineBean.isUnderSvn; }
 
@@ -62,7 +62,7 @@ public class CodeLine {
     }
 
     public String toString(){
-        return m_codeLineBean.proPath + "   " + m_codeLineBean.createDate;
+        return m_codeLineBean.projPath + "   " + m_codeLineBean.createDate;
     }
 
     public FileMapping getFileMap(){
